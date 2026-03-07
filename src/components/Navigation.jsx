@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Home,
   Calendar,
   FileText,
-  ScrollText,
   Package,
   User,
   Settings,
@@ -16,7 +15,10 @@ import {
   Box,
   Users,
   Bell,
-  BarChart3
+  BarChart3,
+  Zap,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react'
 
 const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) => (
@@ -29,7 +31,24 @@ const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) 
   </button>
 )
 
+const rapidActions = [
+  { id: 'financeiro', label: 'Financeiro', icon: CreditCard, hideFor: 'porteiro' },
+  { id: 'reservas', label: 'Reservas', icon: Calendar, hideFor: 'porteiro' },
+  { id: 'chamados', label: 'Chamados', icon: Wrench, hideFor: 'porteiro' },
+  { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master'] },
+  { id: 'notificacoes', label: 'Notificações', icon: Bell },
+  { id: 'documentos', label: 'Atas e Regulamentos', icon: FileText }
+]
+
 export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
+  const [rapidPanelOpen, setRapidPanelOpen] = useState(false)
+
+  const filteredRapidActions = rapidActions.filter(a => {
+    if (a.hideFor === userProfile?.tipo) return false
+    if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
+    return true
+  })
+
   return (
     <aside className="hidden md:flex flex-col w-64 border-r border-card-border bg-surface sticky top-0 h-screen z-50">
       {/* Logo - prioridade, sempre visível no topo */}
@@ -45,21 +64,36 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
         <div className="space-y-1">
           <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
 
+          {/* Painel de Ações Rápidas */}
+          <div className="rounded-lg overflow-hidden border border-transparent hover:border-slate-200">
+            <button
+              onClick={() => setRapidPanelOpen(prev => !prev)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
+            >
+              <Zap size={20} className="text-primary shrink-0" />
+              <span className="font-bold text-sm hidden md:block flex-1 text-left">Painel de Ações Rápidas</span>
+              {rapidPanelOpen ? <ChevronDown size={18} className="shrink-0" /> : <ChevronRight size={18} className="shrink-0" />}
+            </button>
+            {rapidPanelOpen && (
+              <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 mt-0.5 pt-1">
+                {filteredRapidActions.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => setActiveTab(id)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
+                  >
+                    <Icon size={18} />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {userProfile?.tipo !== 'porteiro' && (
-            <>
-              <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => setActiveTab('mural')} />
-              <SidebarItem icon={CreditCard} label="Financeiro" active={activeTab === 'financeiro'} onClick={() => setActiveTab('financeiro')} />
-              <SidebarItem icon={Calendar} label="Reservas" active={activeTab === 'reservas'} onClick={() => setActiveTab('reservas')} />
-              <SidebarItem icon={Wrench} label="Chamados" active={activeTab === 'chamados'} onClick={() => setActiveTab('chamados')} />
-            </>
+            <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => setActiveTab('mural')} />
           )}
 
-          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-            <SidebarItem icon={Box} label="Patrimônio" active={activeTab === 'patrimonio'} onClick={() => setActiveTab('patrimonio')} />
-          )}
-
-          <SidebarItem icon={Bell} label="Notificações" active={activeTab === 'notificacoes'} onClick={() => setActiveTab('notificacoes')} />
-          <SidebarItem icon={FileText} label="Atas e Regulamentos" active={activeTab === 'documentos'} onClick={() => setActiveTab('documentos')} />
           <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => setActiveTab('visitantes')} />
           <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => setActiveTab('encomendas')} />
 
@@ -82,11 +116,20 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
 }
 
 export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, onLogout }) => {
+  const [rapidPanelOpen, setRapidPanelOpen] = useState(false)
+  const filteredRapidActions = rapidActions.filter(a => {
+    if (a.hideFor === userProfile?.tipo) return false
+    if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
+    return true
+  })
+
   if (!isOpen) return null
+
+  const go = (tab) => { setActiveTab(tab); onClose(); }
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] md:hidden" onClick={onClose}>
-      <div className="w-80 h-full bg-surface border-r border-card-border p-8 flex flex-col gap-2 animate-in slide-in-from-left duration-300" onClick={e => e.stopPropagation()}>
+      <div className="w-80 h-full bg-surface border-r border-card-border p-8 flex flex-col gap-2 animate-in slide-in-from-left duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-10 w-full pl-2">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Gestor360 Logo" className="w-[105px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
@@ -99,24 +142,39 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
           </button>
         </div>
 
-        <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => { setActiveTab('inicio'); onClose(); }} showLabel />
+        <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => go('inicio')} showLabel />
+
+        {/* Painel de Ações Rápidas (mobile) */}
+        <div className="rounded-lg overflow-hidden border border-slate-200">
+          <button
+            onClick={() => setRapidPanelOpen(prev => !prev)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
+          >
+            <Zap size={20} className="text-primary shrink-0" />
+            <span className="font-bold text-sm">Painel de Ações Rápidas</span>
+            {rapidPanelOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+          </button>
+          {rapidPanelOpen && (
+            <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 pt-1">
+              {filteredRapidActions.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => go(id)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
+                >
+                  <Icon size={18} />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {userProfile?.tipo !== 'porteiro' && (
-          <>
-            <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => { setActiveTab('mural'); onClose(); }} showLabel />
-            <SidebarItem icon={CreditCard} label="Financeiro" active={activeTab === 'financeiro'} onClick={() => { setActiveTab('financeiro'); onClose(); }} showLabel />
-            <SidebarItem icon={Calendar} label="Reservas" active={activeTab === 'reservas'} onClick={() => { setActiveTab('reservas'); onClose(); }} showLabel />
-            <SidebarItem icon={Wrench} label="Chamados" active={activeTab === 'chamados'} onClick={() => { setActiveTab('chamados'); onClose(); }} showLabel />
-          </>
+          <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => go('mural')} showLabel />
         )}
 
-        {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-          <SidebarItem icon={Box} label="Patrimônio" active={activeTab === 'patrimonio'} onClick={() => { setActiveTab('patrimonio'); onClose(); }} showLabel />
-        )}
-
-        <SidebarItem icon={Bell} label="Notificações" active={activeTab === 'notificacoes'} onClick={() => { setActiveTab('notificacoes'); onClose(); }} showLabel />
-        <SidebarItem icon={FileText} label="Atas e Regulamentos" active={activeTab === 'documentos'} onClick={() => { setActiveTab('documentos'); onClose(); }} showLabel />
-        <SidebarItem icon={User} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => { setActiveTab('visitantes'); onClose(); }} showLabel />
+        <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => go('visitantes')} showLabel />
         <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => { setActiveTab('encomendas'); onClose(); }} showLabel />
 
         {userProfile?.tipo === 'admin_master' && (

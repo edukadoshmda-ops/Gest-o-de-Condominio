@@ -110,11 +110,12 @@ export const Patrimonio = ({ session, userProfile }) => {
         setLoading(true)
         try {
             if (activeSubTab === 'dashboard' || activeSubTab === 'list') {
-                const { data, error } = await supabase
-                    .from('patrimonio')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                if (!error) setAssets(data || [])
+                const [assetRes, execRes] = await Promise.all([
+                    supabase.from('patrimonio').select('*').order('created_at', { ascending: false }),
+                    supabase.from('patrimonio_execucoes').select('*, patrimonio_checklists(titulo)').order('created_at', { ascending: false }).limit(50)
+                ])
+                if (!assetRes.error) setAssets(assetRes.data || [])
+                if (!execRes.error) setExecutions(execRes.data || [])
             }
             if (activeSubTab === 'checklists') {
                 const { data, error } = await supabase
@@ -278,35 +279,90 @@ export const Patrimonio = ({ session, userProfile }) => {
         a.categoria.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
+    const formatCurrency = (val) => Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
+    // Dados reais calculados a partir dos ativos
+    const totalPatrimonio = assets.reduce((acc, a) => acc + Number(a.valor || 0), 0)
+    const totalDepreciacao = assets.reduce((acc, a) => acc + calculateDepreciation(a).accumulated, 0)
+    const emManutencao = assets.filter(a => (a.status || '').toLowerCase().includes('manutencao')).length
+    const hoje = new Date()
+    const em30Dias = new Date(hoje)
+    em30Dias.setDate(em30Dias.getDate() + 30)
+    const garantiasVencer = assets.filter(a => {
+        const g = a.garantia
+        if (!g) return false
+        const d = new Date(g)
+        return d >= hoje && d <= em30Dias
+    }).length
+
+    const alertasReais = [
+        ...assets.filter(a => (a.status || '').toLowerCase().includes('manutencao')).map(a => ({
+            item: a.nome,
+            action: 'Em manutenção',
+            date: '—',
+            status: 'pendente',
+            type: 'Manutenção'
+        })),
+        ...assets.filter(a => {
+            const g = a.garantia
+            if (!g) return false
+            const d = new Date(g)
+            return d >= hoje && d <= em30Dias
+        }).map(a => {
+            const dias = Math.ceil((new Date(a.garantia) - hoje) / (1000 * 60 * 60 * 24))
+            return {
+                item: a.nome,
+                action: `Garantia expira em ${dias} dia(s)`,
+                date: new Date(a.garantia).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                status: 'vencendo',
+                type: 'Garantia'
+            }
+        })
+    ]
+
+    const categoriasParaChart = (() => {
+        const total = totalPatrimonio || 1
+        const porCat = {}
+        assets.forEach(a => {
+            const c = a.categoria || 'Outros'
+            porCat[c] = (porCat[c] || 0) + Number(a.valor || 0)
+        })
+        const cores = { 'Equipamentos': 'bg-primary', 'Móveis': 'bg-blue-500', 'Eletrônicos': 'bg-purple-500', 'Imóveis': 'bg-emerald-500', 'Veículos': 'bg-pink-500' }
+        return Object.entries(porCat).map(([label, valor]) => ({
+            label,
+            value: Math.round((valor / total) * 100),
+            color: cores[label] || 'bg-slate-500'
+        })).sort((a, b) => b.value - a.value)
+    })()
+
     const renderDashboard = () => (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <StatCard
                     title="Patrimônio Total"
-                    value="R$ 68.800,00"
+                    value={formatCurrency(totalPatrimonio)}
                     subValue="Investimento acumulado"
                     icon={TrendingUp}
                     color="primary"
-                    trend={12}
                 />
                 <StatCard
                     title="Depreciação"
-                    value="R$ 4.250,15"
+                    value={formatCurrency(totalDepreciacao)}
                     subValue="Valor contábil reduzido"
                     icon={BarChart3}
                     color="orange"
                 />
                 <StatCard
                     title="Em Manutenção"
-                    value="2"
+                    value={emManutencao}
                     subValue="Itens indisponíveis"
                     icon={AlertTriangle}
                     color="red"
                 />
                 <StatCard
                     title="Garantias à Vencer"
-                    value="1"
+                    value={garantiasVencer}
                     subValue="Próximos 30 dias"
                     icon={ShieldCheck}
                     color="emerald"
@@ -328,11 +384,9 @@ export const Patrimonio = ({ session, userProfile }) => {
                         </div>
 
                         <div className="space-y-4">
-                            {[
-                                { item: 'Ar Condicionado Central', action: 'Revisão Periódica', date: 'Hoje', status: 'pendente', type: 'Manutenção' },
-                                { item: 'Protetor de Surto Trifásico', action: 'Garantia expira em 10 dias', date: '15/03', status: 'vencendo', type: 'Garantia' },
-                                { item: 'Extintores Bloco A', action: 'Validade de recarga', date: '22/03', status: 'alerta', type: 'Segurança' },
-                            ].map((alert, i) => (
+                            {alertasReais.length === 0 ? (
+                                <p className="text-slate-500 text-sm py-8 text-center">Nenhum alerta no momento. Os avisos surgem automaticamente para itens em manutenção ou com garantia prestes a vencer.</p>
+                            ) : alertasReais.map((alert, i) => (
                                 <div key={i} className="flex items-center gap-4 p-5 bg-background border border-card-border rounded-2xl hover:border-primary/30 transition-all group">
                                     <div className={`size-12 rounded-xl flex items-center justify-center shrink-0 ${alert.status === 'pendente' ? 'bg-orange-500/10 text-orange-500' :
                                         alert.status === 'vencendo' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'
@@ -364,12 +418,9 @@ export const Patrimonio = ({ session, userProfile }) => {
                         </div>
 
                         <div className="space-y-5">
-                            {[
-                                { label: 'Equipamentos', value: 45, color: 'bg-primary' },
-                                { label: 'Móveis', value: 25, color: 'bg-blue-500' },
-                                { label: 'Eletrônicos', value: 20, color: 'bg-purple-500' },
-                                { label: 'Outros', value: 10, color: 'bg-slate-500' },
-                            ].map((cat, i) => (
+                            {categoriasParaChart.length === 0 ? (
+                                <p className="text-slate-500 text-sm py-6 text-center">Nenhum item cadastrado. Adicione patrimônio para ver a distribuição por categoria.</p>
+                            ) : categoriasParaChart.map((cat, i) => (
                                 <div key={i} className="space-y-2">
                                     <div className="flex justify-between text-[11px] font-bold">
                                         <span className="text-slate-600 uppercase">{cat.label}</span>
@@ -603,28 +654,46 @@ export const Patrimonio = ({ session, userProfile }) => {
                 </div>
             </div>
 
-            {/* Recent Activity Mini-table */}
+            {/* Recent Activity - dados reais */}
             <div className="bg-surface rounded-[40px] border border-card-border p-8 shadow-2xl">
                 <h3 className="text-slate-900 text-sm font-black uppercase tracking-widest mb-8">Atividades Recentes</h3>
                 <div className="space-y-4">
-                    {[
-                        { user: 'Marcos Silva', action: 'Checklist Semanal Elétrica', date: 'Hoje, 09:12', result: 'Conforme', status: 'success' },
-                        { user: 'Juliana Costa', action: 'Adicionou Ar Condicionado Central', date: 'Ontem, 16:45', result: 'Novo Item', status: 'info' },
-                        { user: 'Suporte Técnico', action: 'Baixa de Monitor Dell 24"', date: '02 Mar, 10:20', result: 'Vendido/Sucata', status: 'warning' },
-                    ].map((log, i) => (
-                        <div key={i} className="flex items-center gap-4 p-5 bg-background border border-card-border rounded-2xl">
-                            <div className="size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shrink-0">{log.user[0]}</div>
-                            <div className="flex-1">
-                                <p className="text-slate-900 text-sm font-bold">{log.action}</p>
-                                <p className="text-slate-500 text-[10px] font-medium uppercase tracking-wider mt-0.5">{log.user} • {log.date}</p>
+                    {(() => {
+                        const atividades = [
+                            ...assets.map(a => ({
+                                action: `Item cadastrado: ${a.nome || 'Sem nome'}`,
+                                created_at: a.created_at,
+                                result: 'Novo Item',
+                                status: 'info'
+                            })),
+                            ...executions.map(e => ({
+                                action: e.patrimonio_checklists?.titulo ? `Checklist: ${e.patrimonio_checklists.titulo}` : 'Execução de checklist',
+                                created_at: e.created_at,
+                                result: e.resumo_conformidade || 'Concluído',
+                                status: (e.resumo_conformidade || '').toLowerCase().includes('conforme') ? 'success' : 'warning'
+                            }))
+                        ]
+                            .sort((a, b) => (new Date(b.created_at || 0) - new Date(a.created_at || 0)))
+                            .slice(0, 5)
+                            .map(x => ({ ...x, date: x.created_at ? new Date(x.created_at).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—' }))
+                        if (atividades.length === 0) {
+                            return <p className="text-slate-500 text-sm py-6 text-center">Nenhuma atividade recente. Cadastre itens ou execute checklists para registrar o histórico.</p>
+                        }
+                        return atividades.map((log, i) => (
+                            <div key={i} className="flex items-center gap-4 p-5 bg-background border border-card-border rounded-2xl">
+                                <div className="size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shrink-0">{(log.action || 'A')[0]}</div>
+                                <div className="flex-1">
+                                    <p className="text-slate-900 text-sm font-bold">{log.action}</p>
+                                    <p className="text-slate-500 text-[10px] font-medium uppercase tracking-wider mt-0.5">{log.date}</p>
+                                </div>
+                                <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-lg ${log.status === 'success' ? 'bg-emerald-500/10 text-emerald-500' :
+                                    log.status === 'info' ? 'bg-blue-500/10 text-blue-500' : 'bg-orange-500/10 text-orange-500'
+                                    }`}>
+                                    {log.result}
+                                </span>
                             </div>
-                            <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-lg ${log.status === 'success' ? 'bg-emerald-500/10 text-emerald-500' :
-                                log.status === 'info' ? 'bg-blue-500/10 text-blue-500' : 'bg-orange-500/10 text-orange-500'
-                                }`}>
-                                {log.result}
-                            </span>
-                        </div>
-                    ))}
+                        ))
+                    })()}
                 </div>
             </div>
         </div>

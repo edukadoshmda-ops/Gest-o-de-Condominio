@@ -161,22 +161,30 @@ export const AdminMaster = ({ session, userProfile, setUserProfile, setActiveTab
 
     const handleDeleteCondo = async (id, nome) => {
         setUpdating(true)
+        setConfirmDelete(null)
         try {
-            const { error } = await supabase
-                .from('condominios')
-                .delete()
-                .eq('id', id)
+            const { error } = await supabase.rpc('delete_condominio', { p_condo_id: id })
 
             if (error) throw error
 
+            // Verifica se realmente excluiu (evita reaparecer ao atualizar)
+            const { data: verifica } = await supabase.from('condominios').select('id').eq('id', id).maybeSingle()
+            if (verifica) {
+                throw new Error('A exclusão não foi confirmada. Pode haver dependências no banco. Tente no Supabase SQL Editor: DELETE FROM condominios WHERE id = \'' + id + '\'')
+            }
+
             setCondominios(prev => prev.filter(c => c.id !== id))
             if (selectedCondo?.id === id) setSelectedCondo(null)
-
-            // alert substituindo o refresh que pode reaparecer no cache
-            fetchData()
             setConfirmDelete(null)
+            toast('Condomínio excluído com sucesso!', 'success')
+            await fetchData()
         } catch (error) {
-            toast('Erro ao excluir condomínio: ' + error.message, 'error')
+            const msg = error?.message || 'Tente novamente.'
+            const hint = msg.includes('does not exist') || msg.includes('não exist')
+                ? ' Execute no Supabase (SQL Editor) o arquivo supabase/RODAR-FUNCAO-EXCLUIR-CONDOMINIO.sql'
+                : ''
+            toast('Erro ao excluir: ' + msg + hint, 'error')
+            setConfirmDelete({ id, nome })
         } finally {
             setUpdating(false)
         }
