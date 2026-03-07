@@ -237,7 +237,7 @@ export const AdminMaster = ({ session, userProfile, setUserProfile, setActiveTab
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
                             <div className="flex items-center justify-center">
-                                <img src="/logo.png" alt="Gestor360 Logo" className="h-10 object-contain" />
+                                <img src="/logo.png" alt="Gestor360 Logo" className="h-[42px] object-contain" />
                             </div>
                             <h2 className="text-slate-900 text-3xl font-black tracking-tight">Painel Root</h2>
                         </div>

@@ -3,6 +3,7 @@ import {
   Home,
   Calendar,
   FileText,
+  ScrollText,
   Package,
   User,
   Settings,
@@ -30,51 +31,52 @@ const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) 
 
 export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
   return (
-    <aside className="hidden md:flex flex-col w-64 border-r border-card-border bg-surface p-4 gap-1 sticky top-0 h-screen z-50">
-      <div className="flex flex-col items-center px-2 mb-2 overflow-hidden w-full">
-        <div className="flex items-center justify-center shrink-0 w-full">
-          <img src="/logo.png" alt="Gestor360 Logo" className="w-[120px] object-contain drop-shadow-lg drop-shadow-primary/20" />
+    <aside className="hidden md:flex flex-col w-64 border-r border-card-border bg-surface sticky top-0 h-screen z-50">
+      {/* Logo - prioridade, sempre visível no topo */}
+      <div className="shrink-0 flex flex-col items-center px-4 pt-4 pb-2 overflow-hidden">
+        <div className="flex items-center justify-center w-full">
+          <img src="/logo.png" alt="Gestor360 Logo" className="w-[126px] object-contain drop-shadow-lg drop-shadow-primary/20" />
         </div>
-        <div className="flex flex-col min-w-0 text-center w-full -mt-6">
-          <span className="text-xs font-black tracking-tight text-slate-900 leading-tight">Gestão de Condomínio</span>
+        <span className="text-xs font-black tracking-tight text-slate-900 leading-tight -mt-1">Gestão de Condomínio</span>
+      </div>
+
+      {/* Menu com barra de rolagem - acesso a todos os itens */}
+      <nav className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-2 custom-scrollbar">
+        <div className="space-y-1">
+          <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
+
+          {userProfile?.tipo !== 'porteiro' && (
+            <>
+              <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => setActiveTab('mural')} />
+              <SidebarItem icon={CreditCard} label="Financeiro" active={activeTab === 'financeiro'} onClick={() => setActiveTab('financeiro')} />
+              <SidebarItem icon={Calendar} label="Reservas" active={activeTab === 'reservas'} onClick={() => setActiveTab('reservas')} />
+              <SidebarItem icon={Wrench} label="Chamados" active={activeTab === 'chamados'} onClick={() => setActiveTab('chamados')} />
+            </>
+          )}
+
+          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+            <SidebarItem icon={Box} label="Patrimônio" active={activeTab === 'patrimonio'} onClick={() => setActiveTab('patrimonio')} />
+          )}
+
+          <SidebarItem icon={Bell} label="Notificações" active={activeTab === 'notificacoes'} onClick={() => setActiveTab('notificacoes')} />
+          <SidebarItem icon={FileText} label="Atas e Regulamentos" active={activeTab === 'documentos'} onClick={() => setActiveTab('documentos')} />
+          <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => setActiveTab('visitantes')} />
+          <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => setActiveTab('encomendas')} />
+
+          {userProfile?.tipo === 'admin_master' && (
+            <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
+          )}
+          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+            <>
+              <SidebarItem icon={BarChart3} label="Relatórios" active={activeTab === 'relatorios'} onClick={() => setActiveTab('relatorios')} />
+              <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
+            </>
+          )}
+
+          <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
+          <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
         </div>
-      </div>
-
-      <div className="space-y-1">
-        <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
-
-        {userProfile?.tipo !== 'porteiro' && (
-          <>
-            <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => setActiveTab('mural')} />
-            <SidebarItem icon={CreditCard} label="Financeiro" active={activeTab === 'financeiro'} onClick={() => setActiveTab('financeiro')} />
-            <SidebarItem icon={Calendar} label="Reservas" active={activeTab === 'reservas'} onClick={() => setActiveTab('reservas')} />
-            <SidebarItem icon={Wrench} label="Chamados" active={activeTab === 'chamados'} onClick={() => setActiveTab('chamados')} />
-          </>
-        )}
-
-        {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-          <SidebarItem icon={Box} label="Patrimônio" active={activeTab === 'patrimonio'} onClick={() => setActiveTab('patrimonio')} />
-        )}
-
-        <SidebarItem icon={Bell} label="Notificações" active={activeTab === 'notificacoes'} onClick={() => setActiveTab('notificacoes')} />
-        <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => setActiveTab('visitantes')} />
-        <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => setActiveTab('encomendas')} />
-
-        {userProfile?.tipo === 'admin_master' && (
-          <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
-        )}
-        {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-          <>
-            <SidebarItem icon={BarChart3} label="Relatórios" active={activeTab === 'relatorios'} onClick={() => setActiveTab('relatorios')} />
-            <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
-          </>
-        )}
-      </div>
-
-      <div className="mt-auto space-y-1">
-        <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
-        <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
-      </div>
+      </nav>
     </aside>
   )
 }
@@ -87,7 +89,7 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
       <div className="w-80 h-full bg-surface border-r border-card-border p-8 flex flex-col gap-2 animate-in slide-in-from-left duration-300" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-10 w-full pl-2">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Gestor360 Logo" className="w-[100px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
+            <img src="/logo.png" alt="Gestor360 Logo" className="w-[105px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
             <div className="flex flex-col ml-1 border-l-2 border-primary/20 pl-3">
               <span className="text-xs font-black text-slate-900 leading-tight">Gestão de Condomínio</span>
             </div>
@@ -113,6 +115,7 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
         )}
 
         <SidebarItem icon={Bell} label="Notificações" active={activeTab === 'notificacoes'} onClick={() => { setActiveTab('notificacoes'); onClose(); }} showLabel />
+        <SidebarItem icon={FileText} label="Atas e Regulamentos" active={activeTab === 'documentos'} onClick={() => { setActiveTab('documentos'); onClose(); }} showLabel />
         <SidebarItem icon={User} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => { setActiveTab('visitantes'); onClose(); }} showLabel />
         <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => { setActiveTab('encomendas'); onClose(); }} showLabel />
 

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Gestor360 - Gestão de Condomínio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+        .pdf-hint { background: #fef3c7; border: 1px solid #f59e0b; padding: 12px 16px; border-radius: 12px; margin-bottom: 32px; font-size: 13px; }
+        .logo { display: block; max-width: 140px; height: auto; margin-bottom: 24px; }
+        h1 { font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .subtitle { color: #64748b; font-size: 15px; margin-bottom: 40px; }
+        h2 { font-size: 18px; font-weight: 700; color: #0f172a; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        h3 { font-size: 15px; font-weight: 600; color: #334155; margin: 20px 0 10px; }
+        p { margin-bottom: 12px; font-size: 14px; color: #475569; }
+        ul { margin: 12px 0 12px 24px; }
+        li { margin-bottom: 8px; font-size: 14px; color: #475569; }
+        .step { background: #f8fafc; border-left: 4px solid #ec5813; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; }
+        .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+        .role-badge { display: inline-block; background: #ec5813; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+        .page-break { page-break-before: always; }
+        @media print { body { padding: 24px; } .pdf-hint { display: none; } }
+    </style>
+</head>
+<body>
+    <p class="pdf-hint"><strong>Para gerar PDF:</strong> Abra este arquivo no navegador (arraste o .html ou use o app em /MANUAL-GESTOR360.html) e pressione <strong>Ctrl+P</strong> (ou Cmd+P no Mac) → Salvar como PDF.</p>
+
+    <img src="./logo.png" alt="Gestor360" class="logo" onerror="this.style.display='none'">
+    <h1>Manual do Usuário</h1>
+    <p class="subtitle">Gestor360 — Gestão de Condomínio</p>
+
+    <h2>1. Acesso e Login</h2>
+    <h3>Entrar no sistema</h3>
+    <p>Informe seu <strong>e-mail</strong> e <strong>senha</strong> cadastrados e clique em "Entrar". O sistema valida as credenciais e redireciona para o Dashboard.</p>
+    <h3>Criar conta (novo morador)</h3>
+    <p>Clique em "Criar conta" e preencha:</p>
+    <ul>
+        <li><strong>Nome completo</strong></li>
+        <li><strong>E-mail</strong> (será usado no login)</li>
+        <li><strong>Senha</strong></li>
+        <li><strong>Nome do Condomínio</strong> — informe exatamente como cadastrado (ex: "Residencial Verde")</li>
+        <li><strong>Tipo de usuário</strong> — Morador, Síndico ou Porteiro</li>
+    </ul>
+    <p class="tip">O nome do condomínio deve corresponder ao cadastrado no sistema. Em caso de dúvida, consulte o síndico ou a administração.</p>
+
+    <h2>2. Dashboard (Início)</h2>
+    <p>Tela principal com atalhos e resumos. Exibe:</p>
+    <ul>
+        <li><strong>Para síndico/admin:</strong> indicadores de reservas do mês, encomendas pendentes, faturas vencidas e avisos recentes</li>
+        <li><strong>Ícones de ação rápida:</strong> Pacotes, Água, Salão, Lixo, Academia, Avisos</li>
+        <li><strong>Próxima encomenda pendente</strong></li>
+        <li><strong>Aviso do síndico</strong> (em destaque)</li>
+        <li><strong>Enquete ativa</strong> — vote nas opções disponíveis</li>
+        <li><strong>Posts recentes do mural</strong></li>
+    </ul>
+
+    <h2 class="page-break">3. Mural</h2>
+    <p>Espaço para publicações da comunidade e avisos gerais.</p>
+    <h3>Publicar</h3>
+    <p>Digite o texto no campo, opcionalmente anexe imagens, e clique em "Publicar". Use o ícone de emoji para adicionar emojis ao texto.</p>
+    <h3>Interação</h3>
+    <ul>
+        <li><strong>Curtir</strong> — clique no ícone de curtir em cada post</li>
+        <li><strong>Comentar</strong> — abra os comentários e adicione sua opinião</li>
+        <li><strong>Excluir</strong> — autores e admins podem excluir suas próprias publicações</li>
+    </ul>
+    <h3>Chat (sidebar)</h3>
+    <p>Lista de conversas (ex.: Marcos, Grupo Comercial, Portaria, Síndico). Selecione uma conversa para ver mensagens e enviar novas. As mensagens são excluídas automaticamente após 24 horas. Ícone de emoji disponível. Indicador "digitando..." quando outro usuário está escrevendo.</p>
+    <h3>Achados & Perdidos</h3>
+    <p>Card para reportar itens achados ou perdidos. Filtre por tipo (Achado/Perdido) e visualize os registros da portaria.</p>
+
+    <h2>4. Financeiro</h2>
+    <p>Consulta de faturas e cobranças do condomínio.</p>
+    <ul>
+        <li><strong>Morador:</strong> visualiza suas próprias faturas, imprime boleto e confirma pagamento</li>
+        <li><strong>Síndico/Admin:</strong> vê todas as faturas, confirma pagamentos e exporta planilha em Excel</li>
+    </ul>
+    <p class="step">Use "Exportar Excel" para baixar a planilha com todas as faturas.</p>
+
+    <h2>5. Reservas</h2>
+    <p>Reserva de áreas comuns: Salão de Festas, Piscina, Lavagem de Carro, Academia, Churrasqueira, Espaço Gourmet.</p>
+    <h3>Como reservar</h3>
+    <ol>
+        <li>Clique na área desejada</li>
+        <li>Escolha a data e o horário</li>
+        <li>Confirme a reserva</li>
+    </ol>
+    <p>Na aba "Minhas Reservas" você vê suas reservas e pode cancelá-las (ícone de lixeira). Use "Exportar Excel" para exportar a lista.</p>
+
+    <h2 class="page-break">6. Chamados</h2>
+    <p>Registro de solicitações de manutenção e serviços. Crie novos chamados e acompanhe o status (Aberto, Em andamento, Resolvido).</p>
+
+    <h2>7. Visitantes</h2>
+    <p>Controle de visitantes e entregas. Cadastre visitantes e libere acessos. O porteiro e o síndico têm acesso ampliado.</p>
+
+    <h2>8. Encomendas</h2>
+    <p>Registro e acompanhamento de encomendas.</p>
+    <ul>
+        <li><strong>Morador:</strong> vê suas encomendas por unidade/bloco</li>
+        <li><strong>Porteiro/Síndico:</strong> cadastra novas encomendas (unidade, bloco, remetente, descrição) e marca como "Entregue"</li>
+    </ul>
+
+    <h2>9. Notificações</h2>
+    <p><strong>Header:</strong> ícone do sino com badge de não lidas. Dropdown com as últimas notificações (mensagens, encomendas, reservas, avisos). Clique em "Ver todas" para o Centro de Notificações.</p>
+    <h3>Centro de Notificações</h3>
+    <p>Aba dedicada para listar todas as notificações. Filtre por Todas, Lidas ou Não lidas. Marque como lida individualmente ou "Marcar todas como lidas". Clique em "Ver" para ir à tela relacionada.</p>
+
+    <h2>10. Patrimônio <span class="role-badge">Síndico/Admin</span></h2>
+    <p>Cadastro e acompanhamento do patrimônio do condomínio. Registre itens com categoria, valor e vida útil. Exporte planilha em CSV.</p>
+
+    <h2>11. Relatórios <span class="role-badge">Síndico/Admin</span></h2>
+    <p>Visão geral com indicadores: reservas no mês, encomendas pendentes, avisos recentes, faturas vencidas e pagas. Gráficos de reservas por área e encomendas por mês. Botão "Exportar Excel" para baixar reservas e faturas.</p>
+
+    <h2>12. Gestão de Perfis <span class="role-badge">Síndico/Admin</span></h2>
+    <p>Lista de usuários do condomínio. Edite perfis, altere tipo (morador, síndico, porteiro) e status (ativo/bloqueado).</p>
+
+    <h2>13. SuperAdmin <span class="role-badge">Admin Master</span></h2>
+    <p>Acesso total: gestão de condomínios, usuários e configurações gerais do sistema.</p>
+
+    <h2 class="page-break">14. Configurações do Chat</h2>
+    <p>No mural, clique no ícone de engrenagem na área de conversas para abrir:</p>
+    <ul>
+        <li><strong>Notificar novas mensagens</strong> — ative para receber alertas (toast) quando chegar nova mensagem</li>
+        <li><strong>Ativar notificações no dispositivo</strong> — habilita Web Push para receber notificações mesmo com o app fechado (requer configuração de chaves VAPID)</li>
+    </ul>
+
+    <h2>15. Temas</h2>
+    <p>Clique no ícone de paleta no header para escolher o tema: Midnight, Ocean, Emerald, Sunset ou Purple.</p>
+
+    <h2>16. Meu Perfil</h2>
+    <p>Acesse pelo menu ou avatar no header. Visualize e edite seu nome. Opção de alterar foto de perfil (upload).</p>
+
+    <h2>17. Busca</h2>
+    <p>Use o campo de busca no header, digite o termo e pressione Enter. Os resultados mostram correspondências em Mural, Financeiro e Reservas.</p>
+
+    <h2>18. Exportações</h2>
+    <ul>
+        <li><strong>Financeiro:</strong> Exportar Excel (faturas)</li>
+        <li><strong>Reservas:</strong> Exportar Excel (reservas)</li>
+        <li><strong>Relatórios:</strong> Exportar Excel (reservas e faturas)</li>
+        <li><strong>Patrimônio:</strong> Exportar CSV</li>
+    </ul>
+
+    <p style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8;">Gestor360 — Gestão de Condomínio. Manual gerado automaticamente.</p>
+</body>
+</html>

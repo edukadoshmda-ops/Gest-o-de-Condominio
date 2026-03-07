@@ -168,6 +168,28 @@ DO $$ BEGIN
 EXCEPTION WHEN OTHERS THEN NULL;
 END $$;
 
+-- ========== 016_documentos_atas_regulamentos ==========
+CREATE TABLE IF NOT EXISTS public.documentos (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    condominio_id uuid NOT NULL REFERENCES public.condominios(id) ON DELETE CASCADE,
+    tipo text NOT NULL CHECK (tipo IN ('ata', 'regulamento')),
+    titulo text NOT NULL,
+    url text,
+    descricao text,
+    created_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_documentos_condominio ON public.documentos(condominio_id);
+CREATE INDEX IF NOT EXISTS idx_documentos_tipo ON public.documentos(tipo);
+ALTER TABLE public.documentos ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "documentos_select" ON public.documentos;
+CREATE POLICY "documentos_select" ON public.documentos FOR SELECT USING (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master');
+DROP POLICY IF EXISTS "documentos_insert" ON public.documentos;
+CREATE POLICY "documentos_insert" ON public.documentos FOR INSERT WITH CHECK ((public.get_my_tipo() IN ('sindico', 'admin_master')) AND (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master'));
+DROP POLICY IF EXISTS "documentos_update" ON public.documentos;
+CREATE POLICY "documentos_update" ON public.documentos FOR UPDATE USING ((public.get_my_tipo() IN ('sindico', 'admin_master')) AND (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master'));
+DROP POLICY IF EXISTS "documentos_delete" ON public.documentos;
+CREATE POLICY "documentos_delete" ON public.documentos FOR DELETE USING ((public.get_my_tipo() IN ('sindico', 'admin_master')) AND (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master'));
+
 -- ========== 015_conversas_nomes ==========
 UPDATE public.conversas SET nome = 'Síndico' WHERE id = 'a0000001-0001-4000-8000-000000000001'::uuid;
 UPDATE public.conversas SET nome = 'Portaria' WHERE id = 'a0000001-0002-4000-8000-000000000002'::uuid;

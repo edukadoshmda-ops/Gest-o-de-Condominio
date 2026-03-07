@@ -21,7 +21,11 @@ import {
     AlertCircle,
     MapPin,
     Plus,
-    CheckCircle2
+    CheckCircle2,
+    ShieldCheck,
+    DoorOpen,
+    Briefcase,
+    Layers
 } from 'lucide-react'
 
 export const PostCard = ({ postId, author, avatar, time, content, likes, comments, images, onLike, onDelete, canDelete, onComment, onShare }) => {
@@ -155,10 +159,10 @@ function ChatPushButton({ session, toast }) {
 }
 
 const CHAT_LIST = [
-    { id: 'a0000001-0001-4000-8000-000000000001', name: 'Síndico', type: 'channel', msg: '', time: '', online: false, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop' },
-    { id: 'a0000001-0002-4000-8000-000000000002', name: 'Portaria', type: 'channel', msg: '', time: '', online: false, img: 'https://images.unsplash.com/photo-1610216705422-caa3fcb6d15d?w=100&h=100&fit=crop' },
-    { id: 'a0000001-0003-4000-8000-000000000003', name: 'Comercial', type: 'channel', msg: '', time: '', online: false, img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop' },
-    { id: 'a0000001-0004-4000-8000-000000000004', name: 'Diversos', type: 'channel', msg: '', time: '', online: false, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
+    { id: 'a0000001-0001-4000-8000-000000000001', name: 'Síndico', type: 'channel', msg: '', time: '', online: false, icon: ShieldCheck },
+    { id: 'a0000001-0002-4000-8000-000000000002', name: 'Portaria', type: 'channel', msg: '', time: '', online: false, icon: DoorOpen },
+    { id: 'a0000001-0003-4000-8000-000000000003', name: 'Comercial', type: 'channel', msg: '', time: '', online: false, icon: Briefcase },
+    { id: 'a0000001-0004-4000-8000-000000000004', name: 'Diversos', type: 'channel', msg: '', time: '', online: false, icon: Layers },
 ]
 
 export const Mural = ({ session, userProfile }) => {
@@ -779,7 +783,9 @@ export const Mural = ({ session, userProfile }) => {
                     </div>
 
                     <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
-                        {chatViewTab === 'canais' && CHAT_LIST.map((chat) => (
+                        {chatViewTab === 'canais' && CHAT_LIST.map((chat) => {
+                            const Icon = chat.icon
+                            return (
                             <div
                                 key={chat.id}
                                 onClick={() => setActiveChat(chat)}
@@ -787,8 +793,8 @@ export const Mural = ({ session, userProfile }) => {
                             >
                                 {activeChat?.id === chat.id && activeChat?.type !== 'dm' && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>}
                                 <div className="relative">
-                                    <div className="size-10 rounded-2xl bg-slate-200 border border-card-border overflow-hidden ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
-                                        <img src={chat.img} alt={chat.name} className="w-full h-full object-cover" />
+                                    <div className="size-10 rounded-2xl bg-slate-200 border border-card-border flex items-center justify-center text-primary ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                                        {Icon && <Icon size={20} />}
                                     </div>
                                     {chat.online && <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 rounded-full border-2 border-slate-900 ring-2 ring-green-500/20"></div>}
                                 </div>
@@ -800,7 +806,8 @@ export const Mural = ({ session, userProfile }) => {
                                     <p className="text-slate-500 text-[10px] font-medium truncate">{chat.msg || 'Nenhuma mensagem'}</p>
                                 </div>
                             </div>
-                        ))}
+                            )
+                        })}
                         {chatViewTab === 'moradores' && moradoresList.map((m) => {
                             const chat = { id: m.id, name: m.nome || 'Morador', type: 'dm' }
                             const isActive = activeChat?.type === 'dm' && activeChat?.id === m.id

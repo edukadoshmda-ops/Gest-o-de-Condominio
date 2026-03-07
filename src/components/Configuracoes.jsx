@@ -11,7 +11,6 @@ import {
     ToggleLeft as Toggle,
     X,
     Lock,
-    EyeOff,
     Loader2
 } from 'lucide-react'
 
@@ -90,7 +89,6 @@ export const Configuracoes = () => {
         }))
     }
 
-
     const handleUpdatePassword = async (e) => {
         e.preventDefault()
         if (passwords.new !== passwords.confirm) {
@@ -101,12 +99,9 @@ export const Configuracoes = () => {
             toast('A senha deve ter no mínimo 6 caracteres.', 'error')
             return
         }
-
         setSavingPassword(true)
         try {
-            const { error } = await supabase.auth.updateUser({
-                password: passwords.new
-            })
+            const { error } = await supabase.auth.updateUser({ password: passwords.new })
             if (error) throw error
             toast('Senha alterada com sucesso!', 'success')
             setShowPasswordModal(false)
@@ -126,9 +121,8 @@ export const Configuracoes = () => {
                 <p className="text-slate-500 text-sm font-medium">Personalize sua experiência no Gestão de Condominios.</p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20 md:pb-0">
-                <div className="space-y-6">
-                    <ConfigSection title="Centro de Notificações">
+            <div className="flex flex-col gap-6 pb-20 md:pb-0 max-w-2xl">
+                <ConfigSection title="Centro de Notificações">
                         <ConfigItem
                             icon={Bell}
                             label="Avisos do Síndico"
@@ -153,29 +147,10 @@ export const Configuracoes = () => {
                             description="Ativar alertas sonoros"
                             rightElement={<ToggleSwitch active={notificacoes.som} onToggle={() => toggleNotif('som')} />}
                         />
-                    </ConfigSection>
+                </ConfigSection>
 
-                    <ConfigSection title="Acesso e Segurança">
-                        <ConfigItem
-                            icon={Shield}
-                            label="Alterar Senha"
-                            description="Mantenha sua conta protegida"
-                            onClick={() => setShowPasswordModal(true)}
-                        />
-                    </ConfigSection>
-                </div>
-
-                <div className="space-y-6">
-                    <ConfigSection title="Sobre o Gestão de Condominios">
+                <ConfigSection title="Sobre o Gestão de Condominios">
                         <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 flex flex-col items-center text-center space-y-3">
-                            <div className="w-full max-w-xs space-y-1.5 text-left">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 block">Senha</label>
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="w-full bg-background border border-card-border rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400"
-                                />
-                            </div>
                             <p className="text-slate-900 font-black text-sm uppercase tracking-widest">Gestão de Condominios v1.0.4</p>
                             <p className="text-slate-500 text-[10px] font-bold leading-relaxed px-4">
                                 Desenvolvido para tornar a gestão condominial mais simples e elegante.
@@ -188,18 +163,24 @@ export const Configuracoes = () => {
                                 Verificar Atualizações
                             </button>
                         </div>
-                    </ConfigSection>
-                </div>
+                </ConfigSection>
+
+                <ConfigSection title="Acesso e Segurança">
+                    <ConfigItem
+                        icon={Shield}
+                        label="Alterar Senha"
+                        description="Mantenha sua conta protegida"
+                        onClick={() => setShowPasswordModal(true)}
+                    />
+                </ConfigSection>
             </div>
 
-            {/* Modal Alterar Senha */}
             {showPasswordModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
                     <div className="bg-surface w-full max-w-md rounded-[40px] border border-card-border p-8 md:p-10 animate-in zoom-in-95 duration-300 relative shadow-2xl">
                         <button onClick={() => setShowPasswordModal(false)} className="size-10 absolute right-6 top-6 rounded-full border border-card-border flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-white transition-all">
                             <X size={20} />
                         </button>
-
                         <div className="text-center mb-8">
                             <div className="size-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 text-primary">
                                 <Lock size={32} />
@@ -207,35 +188,29 @@ export const Configuracoes = () => {
                             <h2 className="text-2xl font-black text-slate-900 mb-2">Alterar Senha</h2>
                             <p className="text-slate-600 text-sm font-medium">Escolha uma senha forte para sua segurança.</p>
                         </div>
-
                         <form onSubmit={handleUpdatePassword} className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nova Senha</label>
-                                <div className="relative">
-                                    <input
-                                        type="password"
-                                        required
-                                        value={passwords.new}
-                                        onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-700"
-                                        placeholder="No mínimo 6 caracteres"
-                                    />
-                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    value={passwords.new}
+                                    onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                                    className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-700"
+                                    placeholder="No mínimo 6 caracteres"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Confirmar Senha</label>
-                                <div className="relative">
-                                    <input
-                                        type="password"
-                                        required
-                                        value={passwords.confirm}
-                                        onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-700"
-                                        placeholder="Repita a nova senha"
-                                    />
-                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    value={passwords.confirm}
+                                    onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                                    className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-700"
+                                    placeholder="Repita a nova senha"
+                                />
                             </div>
-
                             <button
                                 type="submit"
                                 disabled={savingPassword}

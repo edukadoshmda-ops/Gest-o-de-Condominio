@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../lib/toast'
-import { KeyRound, Mail, Loader2, Building2 } from 'lucide-react'
+import { KeyRound, Mail, Loader2, Building2, ArrowLeft } from 'lucide-react'
 
-export const Login = ({ onSession }) => {
+export const Login = ({ onSession, onBack }) => {
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('')
@@ -101,14 +101,23 @@ export const Login = ({ onSession }) => {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+        <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            {/* Background elements - azul suave */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-sky-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-sky-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
-            <div className="w-full max-w-md bg-surface p-8 md:p-10 rounded-[40px] border border-card-border shadow-2xl relative z-10">
+            <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-[40px] border border-slate-200 shadow-2xl relative z-10">
+                {onBack && (
+                    <button
+                        type="button"
+                        onClick={onBack}
+                        className="absolute top-6 left-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 text-sm font-medium"
+                    >
+                        <ArrowLeft size={18} /> Voltar
+                    </button>
+                )}
                 <div className="flex flex-col items-center text-center mb-10">
-                    <img src="/logo.png" alt="Gestor360 Logo" className="h-24 mb-4 object-contain" />
+                    <img src="/logo.png" alt="Gestor360 Logo" className="h-[131px] mb-4 object-contain" />
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
                         {isRegistering ? 'Criar Conta' : 'Gestão de Condominios'}
                     </h1>
@@ -134,7 +143,7 @@ export const Login = ({ onSession }) => {
                                         required
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value)}
-                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-600"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="Ex: João da Silva"
                                     />
                                 </div>
@@ -147,7 +156,7 @@ export const Login = ({ onSession }) => {
                                         required
                                         value={nomeCondominio}
                                         onChange={(e) => setNomeCondominio(e.target.value)}
-                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-600"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="Ex: Residencial Solar"
                                     />
                                 </div>
@@ -159,7 +168,7 @@ export const Login = ({ onSession }) => {
                                     <select
                                         value={tipoSelecionado}
                                         onChange={(e) => setTipoSelecionado(e.target.value)}
-                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all appearance-none cursor-pointer"
                                     >
                                         <option value="morador">Morador</option>
                                         <option value="porteiro">Funcionário (Portaria/Limpeza)</option>
@@ -179,7 +188,7 @@ export const Login = ({ onSession }) => {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-background border border-card-border rounded-xl pl-12 pr-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-600"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400"
                                 placeholder="seu@email.com"
                             />
                         </div>
@@ -194,7 +203,7 @@ export const Login = ({ onSession }) => {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-background border border-card-border rounded-xl pl-12 pr-4 py-3 text-sm text-slate-900 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-600"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-slate-400"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -205,7 +214,7 @@ export const Login = ({ onSession }) => {
                         disabled={loading}
                         className="w-full pt-4 group"
                     >
-                        <div className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:shadow-primary/40 group-hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <div className="w-full flex items-center justify-center gap-2 py-4 bg-sky-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-sky-600/20 hover:shadow-sky-600/40 group-hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                             {loading ? <Loader2 className="animate-spin" size={18} /> : (isRegistering ? 'Criar Cadastro' : 'Acessar Plataforma')}
                         </div>
                     </button>

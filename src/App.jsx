@@ -9,6 +9,7 @@ import { Visitantes } from './components/Visitantes'
 import { Chamados } from './components/Chamados'
 import { Mural } from './components/Mural'
 import { Login } from './components/Login'
+import { Landing } from './components/Landing'
 import { Perfil } from './components/Perfil'
 import { Configuracoes } from './components/Configuracoes'
 import { AdminMaster } from './components/AdminMaster'
@@ -18,6 +19,7 @@ import { Encomendas } from './components/Encomendas'
 import { Busca } from './components/Busca'
 import { CentroNotificacoes } from './components/CentroNotificacoes'
 import { Relatorios } from './components/Relatorios'
+import { Documentos } from './components/Documentos'
 import { Plus } from 'lucide-react'
 
 const THEMES = {
@@ -64,6 +66,7 @@ const App = () => {
     const [userProfile, setUserProfile] = useState(null)
     const [loadingAuth, setLoadingAuth] = useState(true)
     const [errorAuth, setErrorAuth] = useState(null)
+    const [showLogin, setShowLogin] = useState(false)
 
     const fetchUserProfile = async (userId, userEmail) => {
         try {
@@ -215,11 +218,12 @@ const App = () => {
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
             if (session?.user) {
-                setLoadingAuth(true) // Reativa loading ao trocar de user
+                setLoadingAuth(true)
                 fetchUserProfile(session.user.id, session.user.email)
             } else {
                 setUserProfile(null)
                 setLoadingAuth(false)
+                setShowLogin(false) // Volta à landing após logout
             }
         })
 
@@ -272,7 +276,8 @@ const App = () => {
     }
 
     if (!session) {
-        return <Login />
+        if (showLogin) return <Login onBack={() => setShowLogin(false)} />
+        return <Landing onEnter={() => setShowLogin(true)} />
     }
 
     const renderContent = () => {
@@ -291,6 +296,8 @@ const App = () => {
                 return <Visitantes session={session} userProfile={userProfile} />
             case 'encomendas':
                 return <Encomendas session={session} userProfile={userProfile} />
+            case 'documentos':
+                return <Documentos session={session} userProfile={userProfile} />
             case 'perfil':
                 return <Perfil session={session} userProfile={userProfile} />
             case 'patrimonio':

@@ -7,6 +7,7 @@
   --background: 10 14 20;
   --surface: 22 27 34;
   --card-border: 48 54 61;
+  --scrollbar-thumb: 2 132 199; /* azul sky-600 */
 }
 
 :root {
@@ -42,7 +43,7 @@ body {
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - azul (cor do tema) */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -52,10 +53,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: rgb(var(--scrollbar-thumb));
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ec5b13;
+  background: rgb(3 105 161); /* sky-700 - tom mais escuro no hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--scrollbar-thumb)) transparent;
 }
