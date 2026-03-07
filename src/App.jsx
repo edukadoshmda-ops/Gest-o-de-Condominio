@@ -20,6 +20,7 @@ import { Busca } from './components/Busca'
 import { CentroNotificacoes } from './components/CentroNotificacoes'
 import { Relatorios } from './components/Relatorios'
 import { Documentos } from './components/Documentos'
+import { Trailer } from './components/Trailer'
 import { Plus } from 'lucide-react'
 
 const THEMES = {
@@ -67,6 +68,7 @@ const App = () => {
     const [loadingAuth, setLoadingAuth] = useState(true)
     const [errorAuth, setErrorAuth] = useState(null)
     const [showLogin, setShowLogin] = useState(false)
+    const [showTrailer, setShowTrailer] = useState(false)
 
     const fetchUserProfile = async (userId, userEmail) => {
         try {
@@ -79,60 +81,29 @@ const App = () => {
             if (error) throw error
 
             if (!data) {
-                // Perfil não existe. Tenta criar um perfil básico automático para não travar o login
-                console.log("Perfil não encontrado, tentando criar perfil padrão...")
+                // Perfil não existe. Para evitar travar, em vez de criar automático, vamos avisar o usuário.
+                console.log("Perfil não encontrado.")
 
-                // Busca o primeiro condomínio disponível
-                let { data: condos } = await supabase.from('condominios').select('id').limit(1)
-                let defaultCondoId = condos?.[0]?.id
+                // Se for o Admin Master (edukadoshmda@gmail.com), ele deve poder entrar para criar o primeiro condo
+                const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
+                const superAdminEmail = envEmail || 'edukadoshmda@gmail.com'
+                const isSuperAdmin = superAdminEmail && userEmail?.toLowerCase() === superAdminEmail
 
-                // Se não existir NENHUM condomínio, cria o primeiro agora!
-                if (!defaultCondoId) {
-                    console.log("Nenhum condomínio encontrado. Criando condomínio inicial...")
-                    const { data: newCondo, error: condoError } = await supabase
-                        .from('condominios')
-                        .insert({
-                            nome: 'Meu Primeiro Condomínio',
-                            codigo_acesso: '1234',
-                            status: 'ativo'
-                        })
-                        .select()
-                        .single()
-
-                    if (condoError) {
-                        console.error("Erro ao criar condomínio inicial:", condoError)
-                    } else {
-                        defaultCondoId = newCondo.id
-                    }
+                if (isSuperAdmin) {
+                    // Busca o primeiro condomínio disponível se existir
+                    let { data: condos } = await supabase.from('condominios').select('id, nome, status').limit(1).maybeSingle()
+                    setUserProfile({
+                        id: userId,
+                        tipo: 'admin_master',
+                        nome: 'Super Admin',
+                        condominio_id: condos?.id || null,
+                        condominios: condos || null
+                    })
+                    setLoadingAuth(false)
+                    return
                 }
 
-                if (defaultCondoId) {
-                    const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
-                    const superAdminEmail = envEmail || 'edukadoshmda@gmail.com'
-                    const isSuperAdmin = superAdminEmail && userEmail?.toLowerCase() === superAdminEmail
-                    const tipoInicial = isSuperAdmin ? 'admin_master' : (userEmail.includes('sindico') || userEmail.includes('admin') ? 'sindico' : 'morador')
-                    console.log("Criando perfil para o condomínio:", defaultCondoId)
-                    const { data: newProfile, error: insertError } = await supabase
-                        .from('usuarios')
-                        .insert({
-                            id: userId,
-                            condominio_id: defaultCondoId,
-                            nome: userEmail.split('@')[0],
-                            tipo: tipoInicial,
-                            ativo: true
-                        })
-                        .select('*, condominios(*)')
-                        .single()
-
-                    if (!insertError) {
-                        setUserProfile(newProfile)
-                        return
-                    } else {
-                        console.error("Erro ao inserir perfil automático:", insertError)
-                    }
-                }
-
-                throw new Error("Não foi possível criar seu perfil automaticamente. Verifique se as tabelas do banco de dados foram criadas corretamente.")
+                throw new Error("Perfil não encontrado no banco de dados. Contate o síndico ou o administrador master para realizar seu cadastro.")
             }
 
             // 1. Verificar se o condomínio está ativo (admin_master e síndico podem entrar para reativar)
@@ -276,8 +247,12 @@ const App = () => {
     }
 
     if (!session) {
-        if (showLogin) return <Login onBack={() => setShowLogin(false)} />
-        return <Landing onEnter={() => setShowLogin(true)} />
+        return (
+            <>
+                {showLogin ? <Login onBack={() => setShowLogin(false)} /> : <Landing onEnter={() => setShowLogin(true)} onWatchTrailer={() => setShowTrailer(true)} />}
+                {showTrailer && <Trailer onFinish={() => setShowTrailer(false)} />}
+            </>
+        )
     }
 
     const renderContent = () => {
@@ -361,6 +336,8 @@ const App = () => {
                 userProfile={userProfile}
                 onLogout={handleLogout}
             />
+
+            {showTrailer && <Trailer onFinish={() => setShowTrailer(false)} />}
         </div>
     )
 }

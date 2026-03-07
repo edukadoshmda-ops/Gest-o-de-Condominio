@@ -32,9 +32,13 @@ const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) 
 )
 
 const rapidActions = [
+  { id: 'mural', label: 'Mural', icon: MessageSquare, hideFor: 'porteiro' },
+  { id: 'visitantes', label: 'Visitantes', icon: Users },
+  { id: 'encomendas', label: 'Encomendas', icon: Package },
   { id: 'financeiro', label: 'Financeiro', icon: CreditCard, hideFor: 'porteiro' },
   { id: 'reservas', label: 'Reservas', icon: Calendar, hideFor: 'porteiro' },
   { id: 'chamados', label: 'Chamados', icon: Wrench, hideFor: 'porteiro' },
+  { id: 'relatorios', label: 'Relatórios', icon: BarChart3, onlyFor: ['sindico', 'admin_master'] },
   { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master'] },
   { id: 'notificacoes', label: 'Notificações', icon: Bell },
   { id: 'documentos', label: 'Atas e Regulamentos', icon: FileText }
@@ -90,21 +94,11 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
             )}
           </div>
 
-          {userProfile?.tipo !== 'porteiro' && (
-            <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => setActiveTab('mural')} />
-          )}
-
-          <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => setActiveTab('visitantes')} />
-          <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => setActiveTab('encomendas')} />
-
           {userProfile?.tipo === 'admin_master' && (
             <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
           )}
           {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-            <>
-              <SidebarItem icon={BarChart3} label="Relatórios" active={activeTab === 'relatorios'} onClick={() => setActiveTab('relatorios')} />
-              <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
-            </>
+            <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
           )}
 
           <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
@@ -170,21 +164,11 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
           )}
         </div>
 
-        {userProfile?.tipo !== 'porteiro' && (
-          <SidebarItem icon={MessageSquare} label="Mural" active={activeTab === 'mural'} onClick={() => go('mural')} showLabel />
-        )}
-
-        <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => go('visitantes')} showLabel />
-        <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => { setActiveTab('encomendas'); onClose(); }} showLabel />
-
         {userProfile?.tipo === 'admin_master' && (
           <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => { setActiveTab('admin'); onClose(); }} showLabel />
         )}
         {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-          <>
-            <SidebarItem icon={BarChart3} label="Relatórios" active={activeTab === 'relatorios'} onClick={() => { setActiveTab('relatorios'); onClose(); }} showLabel />
-            <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => { setActiveTab('usuarios'); onClose(); }} showLabel />
-          </>
+          <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => { setActiveTab('usuarios'); onClose(); }} showLabel />
         )}
 
         <div className="mt-auto border-t border-card-border pt-6 space-y-1">
