@@ -245,6 +245,45 @@ export const Mural = ({ session, userProfile }) => {
         if (activeChat?.id && userProfile?.condominio_id) fetchMensagens(activeChat)
     }, [activeChat?.id, activeChat?.type, userProfile?.condominio_id])
 
+    // Realtime: novas mensagens em DM
+    useEffect(() => {
+        if (activeChat?.type !== 'dm' || !activeChat?.id || !userProfile?.condominio_id || !session?.user) return
+        const me = session.user.id
+        const other = activeChat.id
+        const ch = supabase
+            .channel('dm-mensagens')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'mensagens_privadas',
+                    filter: `condominio_id=eq.${userProfile.condominio_id}`,
+                },
+                (payload) => {
+                    const row = payload.new
+                    const isMyConv =
+                        (row.remetente_id === me && row.destinatario_id === other) ||
+                        (row.remetente_id === other && row.destinatario_id === me)
+                    if (isMyConv) {
+                        const key = `dm-${other}`
+                        setMensagensByConversa((prev) => ({
+                            ...prev,
+                            [key]: [...(prev[key] || []), {
+                                id: row.id,
+                                conteudo: row.conteudo,
+                                remetente_id: row.remetente_id,
+                                remetente_nome: row.remetente_nome,
+                                created_at: row.created_at,
+                            }],
+                        }))
+                    }
+                }
+            )
+            .subscribe()
+        return () => { supabase.removeChannel(ch) }
+    }, [activeChat?.id, activeChat?.type, userProfile?.condominio_id, session?.user?.id])
+
     useEffect(() => {
         if (!activeChat?.id || !session?.user) return
         const chName = activeChat.type === 'dm'

@@ -131,3 +131,45 @@ DROP POLICY IF EXISTS "achados_update" ON public.achados_perdidos;
 CREATE POLICY "achados_update" ON public.achados_perdidos FOR UPDATE USING (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master');
 DROP POLICY IF EXISTS "achados_delete" ON public.achados_perdidos;
 CREATE POLICY "achados_delete" ON public.achados_perdidos FOR DELETE USING (condominio_id = public.get_my_condo() OR public.get_my_tipo() = 'admin_master');
+
+-- ========== 013_mensagens_privadas ==========
+CREATE TABLE IF NOT EXISTS public.mensagens_privadas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  condominio_id UUID NOT NULL REFERENCES public.condominios(id) ON DELETE CASCADE,
+  remetente_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  remetente_nome TEXT NOT NULL,
+  destinatario_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  conteudo TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_mensagens_privadas_lookup ON public.mensagens_privadas(condominio_id, remetente_id, destinatario_id);
+ALTER TABLE public.mensagens_privadas ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "mensagens_privadas_select" ON public.mensagens_privadas;
+CREATE POLICY "mensagens_privadas_select" ON public.mensagens_privadas FOR SELECT USING (condominio_id = public.get_my_condo() AND (remetente_id = auth.uid() OR destinatario_id = auth.uid()));
+DROP POLICY IF EXISTS "mensagens_privadas_insert" ON public.mensagens_privadas;
+CREATE POLICY "mensagens_privadas_insert" ON public.mensagens_privadas FOR INSERT WITH CHECK (condominio_id = public.get_my_condo() AND remetente_id = auth.uid());
+DROP POLICY IF EXISTS "mensagens_privadas_delete" ON public.mensagens_privadas;
+CREATE POLICY "mensagens_privadas_delete" ON public.mensagens_privadas FOR DELETE USING (remetente_id = auth.uid());
+
+-- ========== 014_dm_notify_realtime ==========
+CREATE OR REPLACE FUNCTION public.notify_nova_mensagem_privada() RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.notificacoes (user_id, condominio_id, tipo, titulo, corpo, referencia_id, metadata)
+  SELECT NEW.destinatario_id, NEW.condominio_id, 'mensagem', 'Mensagem de ' || NEW.remetente_nome, LEFT(NEW.conteudo, 100), NEW.id, jsonb_build_object('remetente', NEW.remetente_nome, 'remetente_id', NEW.remetente_id, 'dm', true)
+  FROM public.usuarios u WHERE u.id = NEW.destinatario_id AND COALESCE(u.notificar_chat, true) = true;
+  RETURN NEW;
+END; $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+DROP TRIGGER IF EXISTS trg_notify_nova_mensagem_privada ON public.mensagens_privadas;
+CREATE TRIGGER trg_notify_nova_mensagem_privada AFTER INSERT ON public.mensagens_privadas FOR EACH ROW EXECUTE FUNCTION public.notify_nova_mensagem_privada();
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'mensagens_privadas') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.mensagens_privadas;
+  END IF;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+-- ========== 015_conversas_nomes ==========
+UPDATE public.conversas SET nome = 'Síndico' WHERE id = 'a0000001-0001-4000-8000-000000000001'::uuid;
+UPDATE public.conversas SET nome = 'Portaria' WHERE id = 'a0000001-0002-4000-8000-000000000002'::uuid;
+UPDATE public.conversas SET nome = 'Comercial' WHERE id = 'a0000001-0003-4000-8000-000000000003'::uuid;
+UPDATE public.conversas SET nome = 'Diversos' WHERE id = 'a0000001-0004-4000-8000-000000000004'::uuid;
