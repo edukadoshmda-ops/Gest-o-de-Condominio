@@ -445,11 +445,7 @@ export const Mural = ({ session, userProfile }) => {
             setAchadosItems(data || [])
         } catch (error) {
             console.error('Erro achados:', error)
-            setAchadosItems([
-                { id: 1, tipo: 'Achado', item: 'Chave de Carro (BMW)', local: 'Estacionamento G1', data: '2024-03-01', status: 'Na Portaria' },
-                { id: 2, tipo: 'Perdido', item: 'Coleira Azul', local: 'Playground', data: '2024-02-28', status: 'Em busca' },
-                { id: 3, tipo: 'Achado', item: 'Óculos de Sol', local: 'Área da Piscina', data: '2024-02-25', status: 'Na Portaria' },
-            ])
+            setAchadosItems([])
         } finally {
             setLoadingAchados(false)
         }
@@ -536,15 +532,7 @@ export const Mural = ({ session, userProfile }) => {
             fetchAchados()
         } catch (error) {
             console.error('Erro ao reportar:', error)
-            // Fallback para simulação para o usuário funcionalidade
-            const simulatedNew = {
-                id: Date.now(),
-                ...newItem,
-                data: new Date().toISOString().split('T')[0]
-            }
-            setAchadosItems([simulatedNew, ...achadosItems])
-            setShowReportForm(false)
-            setNewItem({ item: '', tipo: 'Achado', local: '', status: 'Na Portaria' })
+            toast('Erro ao registrar. Verifique a conexão.', 'error')
         } finally {
             setReportingItem(false)
         }

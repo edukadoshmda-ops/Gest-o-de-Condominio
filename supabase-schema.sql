@@ -98,32 +98,8 @@ CREATE TABLE IF NOT EXISTS public.encomendas (
     condominio_id uuid
 );
 
--- Inserindo alguns dados de exemplo (opcional, para testes iniciais)
--- Avisos
-INSERT INTO public.avisos (titulo, descricao, tag) 
-VALUES ('Manutenção Preventiva de Reservatórios', 'A área da piscina e reservatórios centrais passarão por higienização técnica programada neste final de semana para garantir a qualidade da água.', 'OFICIAL')
-ON CONFLICT DO NOTHING;
-
--- Enquetes (Atenção ao formato JSONB)
-INSERT INTO public.enquetes (titulo, opcoes, ativa) 
-VALUES (
-    'Revitalização da Fachada: Paleta de Cores 2024', 
-    '[{"label": "Cinza Graphite", "value": 45, "color": "bg-primary"}, {"label": "Bege Areia", "value": 30, "color": "bg-slate-500"}, {"label": "Branco Neve", "value": 25, "color": "bg-slate-300"}]'::jsonb, 
-    true
-)
-ON CONFLICT DO NOTHING;
-
--- Encomendas
-INSERT INTO public.encomendas (local, codigo, status)
-VALUES ('Portaria 1', 'REF: #882-941', 'Pendente')
-ON CONFLICT DO NOTHING;
-
--- Faturas
-INSERT INTO public.faturas (descricao, vencimento, valor, status, data_pagamento)
-VALUES 
-    ('Taxa Condominial Ref. Março', '2026-03-10', 540.00, 'Pendente', NULL),
-    ('Taxa Condominial Ref. Fevereiro', '2026-02-10', 540.00, 'Pago', '2026-02-08')
-ON CONFLICT DO NOTHING;
+-- Dados de exemplo REMOVIDOS - o app começa vazio para uso com dados reais.
+-- Para limpar dados de teste existentes, use o script LIMPAR-DADOS-TESTE.sql
 
 -- Habilitando RLS para todas as tabelas
 ALTER TABLE public.chamados ENABLE ROW LEVEL SECURITY;

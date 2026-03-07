@@ -344,11 +344,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
         }))
     }
 
-    const encomendaDisplay = encomenda || {
-        local: 'Portaria 1',
-        codigo: 'REF: #882-941',
-        created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString() // 45 mins ago
-    }
+    const encomendaDisplay = encomenda
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -563,13 +559,13 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                             <div className="flex justify-between items-start mb-1">
                                 <h3 className="text-slate-900 font-bold text-base">Encomenda!</h3>
                                 <span className="text-[10px] text-slate-500 font-bold font-mono">
-                                    {encomenda ? new Date(encomenda.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '10:45'}
+                                    {encomendaDisplay ? new Date(encomendaDisplay.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}
                                 </span>
                             </div>
                             <p className="text-slate-600 text-xs font-medium leading-tight">
-                                {encomenda ? `Chegou um volume para você na ${encomendaDisplay.local}.` : 'Nenhuma encomenda pendente no momento.'}
+                                {encomendaDisplay ? `Chegou um volume para você na ${encomendaDisplay.local}.` : 'Nenhuma encomenda pendente no momento.'}
                             </p>
-                            {encomenda && (
+                            {encomendaDisplay && (
                                 <div className="mt-3 flex items-center justify-between">
                                     <span className="bg-background px-2 py-0.5 rounded-lg border border-card-border text-[9px] font-mono font-black text-slate-600">{encomendaDisplay.codigo}</span>
                                     <button

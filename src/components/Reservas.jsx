@@ -50,7 +50,7 @@ export const Reservas = ({ session, userProfile }) => {
 
     const areas = [
         { id: '1', icon: PartyPopper, title: "Salão de Festas", status: "Disponível", color: "bg-green-500" },
-        { id: '2', icon: Droplets, title: "Piscina Adulto", status: "Manutenção", color: "bg-primary" },
+        { id: '2', icon: Droplets, title: "Piscina Adulto", status: "Disponível", color: "bg-green-500" },
         { id: '3', icon: Car, title: "Lavagem de Carro", status: "Disponível", color: "bg-green-500" },
         { id: '4', icon: Dumbbell, title: "Academia Fitness", status: "Livre", color: "bg-blue-500" },
         { id: '5', icon: CalendarDays, title: "Churrasqueira 01", status: "Ocupado", color: "bg-red-500" },
@@ -92,10 +92,6 @@ export const Reservas = ({ session, userProfile }) => {
     }
 
     const handleOpenModal = (area) => {
-        if (area.status === 'Manutenção') {
-            toast('Esta área está em manutenção e não pode ser reservada agora.', 'error')
-            return
-        }
         setSelectedArea(area)
         setShowModal(true)
     }
