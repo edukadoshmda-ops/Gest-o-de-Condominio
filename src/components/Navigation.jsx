@@ -123,57 +123,65 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] md:hidden" onClick={onClose}>
-      <div className="w-80 h-full bg-surface border-r border-card-border p-8 flex flex-col gap-2 animate-in slide-in-from-left duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-10 w-full pl-2">
+      <div
+        className="w-80 h-full bg-surface border-r border-card-border flex flex-col animate-in slide-in-from-left duration-300"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header Fixo */}
+        <div className="p-8 pb-4 shrink-0 flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Gestor360 Logo" className="w-[105px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
             <div className="flex flex-col ml-1 border-l-2 border-primary/20 pl-3">
               <span className="text-xs font-black text-slate-900 leading-tight">Gestão de Condomínio</span>
             </div>
           </div>
-          <button onClick={onClose} className="size-10 flex shrink-0 items-center justify-center hover:bg-white/5 rounded-full transition-colors text-slate-600">
+          <button onClick={onClose} className="size-10 flex shrink-0 items-center justify-center hover:bg-slate-100 rounded-full transition-colors text-slate-600">
             <X size={24} />
           </button>
         </div>
 
-        <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => go('inicio')} showLabel />
+        {/* Conteúdo Rolável */}
+        <nav className="flex-1 overflow-y-auto px-8 py-4 space-y-2 custom-scrollbar min-h-0">
+          <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => go('inicio')} showLabel />
 
-        {/* Painel de Ações Rápidas (mobile) */}
-        <div className="rounded-lg overflow-hidden border border-slate-200">
-          <button
-            onClick={() => setRapidPanelOpen(prev => !prev)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
-          >
-            <Zap size={20} className="text-primary shrink-0" />
-            <span className="font-bold text-sm">Painel de Ações Rápidas</span>
-            {rapidPanelOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-          </button>
-          {rapidPanelOpen && (
-            <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 pt-1">
-              {filteredRapidActions.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => go(id)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
-                >
-                  <Icon size={18} />
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
+          {/* Painel de Ações Rápidas (mobile) */}
+          <div className="rounded-lg overflow-hidden border border-slate-200">
+            <button
+              onClick={() => setRapidPanelOpen(prev => !prev)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
+            >
+              <Zap size={20} className="text-primary shrink-0" />
+              <span className="font-bold text-sm">Painel de Ações Rápidas</span>
+              {rapidPanelOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+            </button>
+            {rapidPanelOpen && (
+              <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 pt-1">
+                {filteredRapidActions.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => go(id)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
+                  >
+                    <Icon size={18} />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {userProfile?.tipo === 'admin_master' && (
+            <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => go('admin')} showLabel />
           )}
-        </div>
+          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+            <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => go('usuarios')} showLabel />
+          )}
+        </nav>
 
-        {userProfile?.tipo === 'admin_master' && (
-          <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => { setActiveTab('admin'); onClose(); }} showLabel />
-        )}
-        {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-          <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => { setActiveTab('usuarios'); onClose(); }} showLabel />
-        )}
-
-        <div className="mt-auto border-t border-card-border pt-6 space-y-1">
-          <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => { setActiveTab('config'); onClose(); }} showLabel />
-          <SidebarItem icon={User} label="Perfil do Morador" active={activeTab === 'perfil'} onClick={() => { setActiveTab('perfil'); onClose(); }} showLabel />
+        {/* Footer Fixo */}
+        <div className="p-8 pt-4 border-t border-card-border space-y-1 shrink-0">
+          <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => go('config')} showLabel />
+          <SidebarItem icon={User} label="Perfil do Morador" active={activeTab === 'perfil'} onClick={() => go('perfil')} showLabel />
           <button
             onClick={() => { onLogout?.(); onClose(); }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-red-500 hover:bg-red-500/10 font-bold text-sm"

@@ -119,12 +119,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                         Tudo o que você precisa em um único app: mural, chat, encomendas, reservas, financeiro e muito mais.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button
-                            onClick={onEnter}
+                        <a
+                            href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-4 rounded-2xl bg-sky-600 text-white font-black text-base shadow-xl shadow-sky-600/30 hover:scale-105 hover:bg-sky-700 transition"
                         >
                             Acessar o App <ChevronRight size={20} />
-                        </button>
+                        </a>
                         <button
                             onClick={onWatchTrailer}
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-4 rounded-2xl bg-white text-sky-600 border-2 border-sky-600 font-black text-base hover:bg-sky-50 transition"
@@ -144,12 +146,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                         <img src="/logo.png" alt="Gestor360" className="h-20 md:h-24 mb-4 object-contain group-hover:scale-110 transition-transform duration-500" />
                         <p className="text-slate-500 font-medium mb-8">Mural, Chat, Encomendas, Reservas, Financeiro e muito mais</p>
                         <div className="flex flex-wrap items-center justify-center gap-4">
-                            <button
-                                onClick={onEnter}
+                            <a
+                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-sky-600 text-white font-bold text-sm hover:bg-sky-700 transition"
                             >
                                 Acessar Agora <ChevronRight size={18} />
-                            </button>
+                            </a>
                             <button
                                 onClick={onWatchTrailer}
                                 className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-50 transition"
@@ -265,9 +269,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                                 </li>
                             </ul>
 
-                            <button onClick={onEnter} className="w-full py-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-sky-50 hover:border-sky-200 transition-all">
+                            <a
+                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-black text-xs text-center uppercase tracking-widest hover:bg-sky-50 hover:border-sky-200 transition-all"
+                            >
                                 Começar Teste
-                            </button>
+                            </a>
                         </div>
 
                         {/* Plano Business */}
@@ -300,9 +309,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                                 </li>
                             </ul>
 
-                            <button onClick={onEnter} className="w-full py-5 rounded-2xl bg-sky-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-sky-600/40 hover:scale-105 transition-all">
+                            <a
+                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-5 rounded-2xl bg-sky-600 text-white font-black text-xs text-center uppercase tracking-widest shadow-xl shadow-sky-600/40 hover:scale-105 transition-all"
+                            >
                                 Escolher Plano
-                            </button>
+                            </a>
                         </div>
 
                         {/* Plano Enterprise */}
@@ -331,9 +345,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                                 </li>
                             </ul>
 
-                            <button onClick={onEnter} className="w-full py-5 rounded-2xl bg-white border-2 border-slate-900 text-slate-900 font-black text-xs uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all">
+                            <a
+                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-5 rounded-2xl bg-white border-2 border-slate-900 text-slate-900 font-black text-xs text-center uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all"
+                            >
                                 Falar com Consultor
-                            </button>
+                            </a>
                         </div>
                     </div>
 
@@ -408,12 +427,22 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                 <div className="max-w-3xl mx-auto text-center">
                     <h2 className="text-3xl font-black text-white mb-4">Pronto para simplificar sua gestão?</h2>
                     <p className="text-white/90 mb-8">Acesse o Gestor360 e descubra como é fácil administrar o condomínio.</p>
-                    <button
-                        onClick={onEnter}
-                        className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl bg-white text-sky-600 font-black text-base hover:scale-105 transition shadow-xl"
-                    >
-                        Entrar Agora <LogIn size={20} />
-                    </button>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button
+                            onClick={onEnter}
+                            className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl border-2 border-white text-white font-black text-base hover:bg-white/10 transition"
+                        >
+                            Acessar Log-in <LogIn size={20} />
+                        </button>
+                        <a
+                            href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl bg-white text-sky-600 font-black text-base hover:scale-105 transition shadow-xl"
+                        >
+                            Assinar Agora <DollarSign size={20} />
+                        </a>
+                    </div>
                 </div>
             </section>
 
