@@ -233,126 +233,64 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                 </div>
 
                 <div className="max-w-6xl mx-auto relative">
-                    <div className="text-center mb-16">
-                        <span className="text-sky-600 font-bold text-xs uppercase tracking-[0.3em] mb-3 block">Transparência Total</span>
-                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">Planos e Assinatura</h2>
-                        <p className="text-slate-600 max-w-2xl mx-auto text-lg">
-                            Escolha o plano ideal para o tamanho do seu condomínio. <br className="hidden md:block" />
-                            <span className="font-bold text-sky-600">Teste grátis por 7 dias!</span>
+                    <div className="text-center mb-16 px-4">
+                        <span className="text-sky-600 font-bold text-xs uppercase tracking-[0.3em] mb-3 block">Valor Justo e Transparente</span>
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">Plano Profissional Completo</h2>
+                        <p className="text-slate-600 max-w-2xl mx-auto text-lg md:text-xl font-medium">
+                            A tecnologia definitiva para o seu condomínio. <span className="text-sky-600 font-bold">Todas as vantagens incluídas</span> em um único valor previsível.
                         </p>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8 items-stretch">
-                        {/* Plano Pro */}
-                        <div className="group bg-white rounded-[40px] p-10 border border-slate-200 hover:border-sky-500/30 transition-all duration-500 flex flex-col hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                            <div className="mb-8">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-4 h-4 rounded-full bg-blue-500 animate-pulse"></div>
-                                    <span className="text-slate-900 font-black text-xl uppercase tracking-tighter">Plano Pro</span>
+                    <div className="max-w-4xl mx-auto px-4">
+                        <div className="group bg-slate-900 rounded-[40px] p-8 md:p-14 border border-slate-800 shadow-2xl shadow-sky-900/40 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 bg-sky-600 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Melhor Escolha</div>
+
+                            <div className="flex flex-col lg:flex-row gap-12">
+                                <div className="flex-1 text-left">
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <div className="w-4 h-4 rounded-full bg-sky-400 animate-pulse"></div>
+                                        <span className="text-white font-black text-2xl uppercase tracking-tighter">Gestor360 PRO ÚNICO</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1 mb-8 text-white">
+                                        <span className="text-7xl font-black leading-none tracking-tighter">R$399</span>
+                                        <span className="text-sky-400 font-bold text-2xl">/mês</span>
+                                    </div>
+                                    <p className="text-slate-400 text-lg mb-8 leading-relaxed font-medium">
+                                        Toda a potência do Gestor360 liberada. <span className="text-white font-bold block mt-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-center md:text-left">Uma única conta, todas as vantagens.</span>
+                                    </p>
+                                    <a
+                                        href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full inline-flex items-center justify-center py-6 rounded-2xl bg-sky-600 text-white font-black text-xs uppercase tracking-[0.4em] shadow-xl shadow-sky-600/40 hover:scale-[1.03] hover:bg-sky-500 transition-all"
+                                    >
+                                        Assinar Agora <ChevronRight size={18} className="ml-2" />
+                                    </a>
                                 </div>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black text-slate-900 leading-none">R$199</span>
-                                    <span className="text-slate-500 font-bold">/mês</span>
+
+                                <div className="flex-1 bg-white/[0.04] rounded-[48px] p-8 md:p-12 border border-white/10 relative">
+                                    <h4 className="text-sky-400 font-black text-[10px] uppercase tracking-[0.3em] mb-8 pr-4">O que está incluído no Plano:</h4>
+                                    <ul className="grid grid-cols-1 gap-5">
+                                        {[
+                                            'Ideal para pequenos condomínios',
+                                            'Mural e Chat completo',
+                                            'Controle de Encomendas Automático',
+                                            'Gestão profissional de médio porte',
+                                            'Todos os recursos do Pro incluídos',
+                                            'Reservas de Áreas Comuns',
+                                            'Gestão Financeira Completa',
+                                            'Até 500 usuários ativos',
+                                            'Suporte Prioritário 24/7',
+                                            'Onboarding e Treinamento'
+                                        ].map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-4 text-slate-300 text-sm font-semibold leading-snug hover:text-white transition-colors cursor-default">
+                                                <CheckCircle2 size={20} className="text-sky-400 shrink-0 mt-0.5" />
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-                                <p className="text-slate-500 text-sm mt-3 font-medium">Ideal para pequenos condomínios até 50 moradores.</p>
                             </div>
-
-                            <ul className="space-y-4 mb-10 flex-1">
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Até 50 usuários
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Mural e Chat completo
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Controle de Encomendas
-                                </li>
-                            </ul>
-
-                            <a
-                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full py-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-black text-xs text-center uppercase tracking-widest hover:bg-sky-50 hover:border-sky-200 transition-all"
-                            >
-                                Começar Teste
-                            </a>
-                        </div>
-
-                        {/* Plano Business */}
-                        <div className="group bg-slate-900 rounded-[40px] p-10 border border-slate-800 shadow-2xl shadow-sky-900/20 scale-105 z-10 flex flex-col relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-3 bg-sky-600 text-white text-[10px] font-black uppercase tracking-widest rounded-bl-3xl">Mais Popular</div>
-                            <div className="mb-8">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-4 h-4 rounded-full bg-sky-400"></div>
-                                    <span className="text-white font-black text-xl uppercase tracking-tighter">Business</span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black text-white leading-none">R$299</span>
-                                    <span className="text-sky-400/80 font-bold">/mês</span>
-                                </div>
-                                <p className="text-slate-400 text-sm mt-3 font-medium">O padrão ouro para gestão eficiente de médio porte.</p>
-                            </div>
-
-                            <ul className="space-y-4 mb-10 flex-1">
-                                <li className="flex items-center gap-3 text-slate-300 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-400" /> Até 100 usuários
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-300 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-400" /> Todos os recursos do Pro
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-300 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-400" /> Reservas de Áreas Comuns
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-300 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-400" /> Gestão Financeira Completa
-                                </li>
-                            </ul>
-
-                            <a
-                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full py-5 rounded-2xl bg-sky-600 text-white font-black text-xs text-center uppercase tracking-widest shadow-xl shadow-sky-600/40 hover:scale-105 transition-all"
-                            >
-                                Escolher Plano
-                            </a>
-                        </div>
-
-                        {/* Plano Enterprise */}
-                        <div className="group bg-white rounded-[40px] p-10 border border-slate-200 hover:border-red-500/30 transition-all duration-500 flex flex-col hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                            <div className="mb-8">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
-                                    <span className="text-slate-900 font-black text-xl uppercase tracking-tighter leading-none">Plano Enterprise</span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black text-slate-900 leading-none">R$399</span>
-                                    <span className="text-slate-500 font-bold">/mês</span>
-                                </div>
-                                <p className="text-slate-500 text-sm mt-3 font-medium">Alta escala para grandes complexos residenciais.</p>
-                            </div>
-
-                            <ul className="space-y-4 mb-10 flex-1">
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Até 500 usuários
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Suporte Prioritário 24/7
-                                </li>
-                                <li className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <CheckCircle2 size={18} className="text-sky-600" /> Onboarding e Treinamento
-                                </li>
-                            </ul>
-
-                            <a
-                                href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full py-5 rounded-2xl bg-white border-2 border-slate-900 text-slate-900 font-black text-xs text-center uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all"
-                            >
-                                Falar com Consultor
-                            </a>
                         </div>
                     </div>
 
