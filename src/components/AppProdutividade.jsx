@@ -18,7 +18,7 @@ export const AppProdutividade = () => {
     return (
         <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-slate-800 font-sans">
             <div className="max-w-2xl bg-white p-10 md:p-14 rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-slate-100 text-center space-y-8 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-sky-500 to-blue-600" />
 
                 <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     App de produtividade
@@ -35,7 +35,7 @@ export const AppProdutividade = () => {
                 <div className="pt-6 pb-2">
                     <a
                         href="/"
-                        className="inline-flex items-center justify-center px-10 py-5 text-[13px] font-black tracking-widest text-white uppercase transition-all bg-emerald-500 rounded-2xl hover:bg-emerald-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/30 active:translate-y-0 active:scale-95"
+                        className="inline-flex items-center justify-center px-10 py-5 text-[13px] font-black tracking-widest text-white uppercase transition-all bg-blue-500 rounded-2xl hover:bg-blue-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/30 active:translate-y-0 active:scale-95"
                     >
                         Testar Gestor 360 One
                     </a>
