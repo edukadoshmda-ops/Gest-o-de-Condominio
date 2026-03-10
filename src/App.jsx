@@ -21,6 +21,7 @@ import { CentroNotificacoes } from './components/CentroNotificacoes'
 import { Relatorios } from './components/Relatorios'
 import { Documentos } from './components/Documentos'
 import { Trailer } from './components/Trailer'
+import { AppOrganizarTarefas } from './components/AppOrganizarTarefas'
 import { Plus } from 'lucide-react'
 
 const THEMES = {
@@ -59,6 +60,11 @@ const THEMES = {
 const themes = Object.keys(THEMES).map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }))
 
 const App = () => {
+    // Intercepta a rota estática para simular a página do Next.js sem autenticação
+    if (typeof window !== 'undefined' && window.location.pathname === '/app-organizar-tarefas') {
+        return <AppOrganizarTarefas />;
+    }
+
     const [activeTab, setActiveTab] = useState('mural')
     const [searchTerm, setSearchTerm] = useState('')
     const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'emerald')
