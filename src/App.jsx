@@ -22,6 +22,8 @@ import { Relatorios } from './components/Relatorios'
 import { Documentos } from './components/Documentos'
 import { Trailer } from './components/Trailer'
 import { AppOrganizarTarefas } from './components/AppOrganizarTarefas'
+import { AppProdutividade } from './components/AppProdutividade'
+import { GestorProjetos } from './components/GestorProjetos'
 import { Plus } from 'lucide-react'
 
 const THEMES = {
@@ -61,8 +63,10 @@ const themes = Object.keys(THEMES).map(id => ({ id, name: id.charAt(0).toUpperCa
 
 const App = () => {
     // Intercepta a rota estática para simular a página do Next.js sem autenticação
-    if (typeof window !== 'undefined' && window.location.pathname === '/app-organizar-tarefas') {
-        return <AppOrganizarTarefas />;
+    if (typeof window !== 'undefined') {
+        if (window.location.pathname === '/app-organizar-tarefas') return <AppOrganizarTarefas />;
+        if (window.location.pathname === '/app-produtividade') return <AppProdutividade />;
+        if (window.location.pathname === '/gestor-projetos') return <GestorProjetos />;
     }
 
     const [activeTab, setActiveTab] = useState('mural')
