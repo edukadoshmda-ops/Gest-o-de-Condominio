@@ -33,8 +33,10 @@ export const Encomendas = ({ session, userProfile }) => {
     const isStaff = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'porteiro' || userProfile?.tipo === 'admin_master'
 
     useEffect(() => {
-        if (userProfile?.condominio_id) {
+        if (session?.user) {
             fetchEncomendas()
+        } else {
+            setLoading(false)
         }
     }, [userProfile, session])
 

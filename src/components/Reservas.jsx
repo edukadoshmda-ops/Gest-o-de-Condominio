@@ -22,7 +22,7 @@ const AreaCard = ({ icon: Icon, title, status, color, onClick }) => (
         <div className={`absolute top-0 right-0 p-3 ${color} text-slate-900 text-[9px] font-black uppercase tracking-widest rounded-bl-2xl shadow-lg ring-1 ring-white/10`}>
             {status}
         </div>
-        <div className={`size-14 rounded-2xl bg-slate-100 border border-card-border flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors`}>
+        <div className={`theme-icon-box size-14 rounded-2xl bg-slate-100 border border-card-border flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors`}>
             <Icon className="text-primary group-hover:scale-110 transition-transform" size={28} />
         </div>
         <h3 className="text-slate-900 text-lg font-bold mb-2">{title}</h3>

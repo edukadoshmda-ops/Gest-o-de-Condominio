@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Home,
-  Calendar,
   FileText,
   Package,
   User,
@@ -15,10 +14,7 @@ import {
   Box,
   Users,
   Bell,
-  BarChart3,
-  Zap,
-  ChevronDown,
-  ChevronRight
+  BarChart3
 } from 'lucide-react'
 
 const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) => (
@@ -31,34 +27,13 @@ const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) 
   </button>
 )
 
-const rapidActions = [
-  { id: 'mural', label: 'Mural', icon: MessageSquare, hideFor: 'porteiro' },
-  { id: 'visitantes', label: 'Visitantes', icon: Users },
-  { id: 'encomendas', label: 'Encomendas', icon: Package },
-  { id: 'financeiro', label: 'Financeiro', icon: CreditCard, hideFor: 'porteiro' },
-  { id: 'reservas', label: 'Reservas', icon: Calendar, hideFor: 'porteiro' },
-  { id: 'chamados', label: 'Chamados', icon: Wrench, hideFor: 'porteiro' },
-  { id: 'relatorios', label: 'Relatórios', icon: BarChart3, onlyFor: ['sindico', 'admin_master'] },
-  { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master'] },
-  { id: 'notificacoes', label: 'Notificações', icon: Bell },
-  { id: 'documentos', label: 'Atas e Regulamentos', icon: FileText }
-]
-
-export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
-  const [rapidPanelOpen, setRapidPanelOpen] = useState(false)
-
-  const filteredRapidActions = rapidActions.filter(a => {
-    if (a.hideFor === userProfile?.tipo) return false
-    if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
-    return true
-  })
-
+export const Sidebar = ({ activeTab, setActiveTab, userProfile, onLogout }) => {
   return (
     <aside className="hidden md:flex flex-col w-64 border-r border-card-border bg-surface sticky top-0 h-screen z-50">
       {/* Logo - prioridade, sempre visível no topo */}
       <div className="shrink-0 flex flex-col items-center px-4 pt-4 pb-2 overflow-hidden">
         <div className="flex items-center justify-center w-full">
-          <img src="/logo.png" alt="Gestor360 Logo" className="w-[126px] object-contain drop-shadow-lg drop-shadow-primary/20" />
+          <img src="/logo.png" alt="Gestor360 Logo" className="app-logo w-[126px] object-contain drop-shadow-lg drop-shadow-primary/20" />
         </div>
         <span className="text-xs font-black tracking-tight text-slate-900 leading-tight -mt-1">Gestão de Condomínio</span>
       </div>
@@ -67,32 +42,6 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
       <nav className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-2 custom-scrollbar">
         <div className="space-y-1">
           <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
-
-          {/* Painel de Ações Rápidas */}
-          <div className="rounded-lg overflow-hidden border border-transparent hover:border-slate-200">
-            <button
-              onClick={() => setRapidPanelOpen(prev => !prev)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
-            >
-              <Zap size={20} className="text-primary shrink-0" />
-              <span className="font-bold text-sm hidden md:block flex-1 text-left">Painel de Ações Rápidas</span>
-              {rapidPanelOpen ? <ChevronDown size={18} className="shrink-0" /> : <ChevronRight size={18} className="shrink-0" />}
-            </button>
-            {rapidPanelOpen && (
-              <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 mt-0.5 pt-1">
-                {filteredRapidActions.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => setActiveTab(id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
-                  >
-                    <Icon size={18} />
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
           {userProfile?.tipo === 'admin_master' && (
             <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
@@ -105,18 +54,21 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile }) => {
           <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
         </div>
       </nav>
+
+      {/* Sair - fixo no final */}
+      <div className="shrink-0 p-4 pt-2 border-t border-card-border">
+        <button
+          onClick={() => onLogout?.()}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-red-500 hover:bg-red-500/10 font-bold text-sm"
+        >
+          <LogOut size={20} /> Sair
+        </button>
+      </div>
     </aside>
   )
 }
 
 export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, onLogout }) => {
-  const [rapidPanelOpen, setRapidPanelOpen] = useState(false)
-  const filteredRapidActions = rapidActions.filter(a => {
-    if (a.hideFor === userProfile?.tipo) return false
-    if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
-    return true
-  })
-
   if (!isOpen) return null
 
   const go = (tab) => { setActiveTab(tab); onClose(); }
@@ -130,7 +82,7 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
         {/* Header Fixo */}
         <div className="p-8 pb-4 shrink-0 flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Gestor360 Logo" className="w-[105px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
+            <img src="/logo.png" alt="Gestor360 Logo" className="app-logo w-[105px] object-contain drop-shadow-lg drop-shadow-primary/20 shrink-0" />
             <div className="flex flex-col ml-1 border-l-2 border-primary/20 pl-3">
               <span className="text-xs font-black text-slate-900 leading-tight">Gestão de Condomínio</span>
             </div>
@@ -143,32 +95,6 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
         {/* Conteúdo Rolável */}
         <nav className="flex-1 overflow-y-auto px-8 py-4 space-y-2 custom-scrollbar min-h-0">
           <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => go('inicio')} showLabel />
-
-          {/* Painel de Ações Rápidas (mobile) */}
-          <div className="rounded-lg overflow-hidden border border-slate-200">
-            <button
-              onClick={() => setRapidPanelOpen(prev => !prev)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-slate-900 hover:bg-slate-100 ${rapidPanelOpen ? 'bg-slate-50' : ''}`}
-            >
-              <Zap size={20} className="text-primary shrink-0" />
-              <span className="font-bold text-sm">Painel de Ações Rápidas</span>
-              {rapidPanelOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-            </button>
-            {rapidPanelOpen && (
-              <div className="pl-4 pr-2 pb-2 space-y-0.5 border-t border-slate-100 pt-1">
-                {filteredRapidActions.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => go(id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === id ? 'bg-primary text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-medium'}`}
-                  >
-                    <Icon size={18} />
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
           {userProfile?.tipo === 'admin_master' && (
             <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => go('admin')} showLabel />

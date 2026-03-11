@@ -51,6 +51,8 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
         { id: 'emerald', name: 'Emerald', color: 'bg-[#d4af37]' },
         { id: 'sunset', name: 'Sunset', color: 'bg-[#f43f5e]' },
         { id: 'purple', name: 'Purple', color: 'bg-[#a855f7]' },
+        { id: 'darkBlue', name: 'Azul Escuro', color: 'bg-[#38bdf8]' },
+        { id: 'black', name: 'Preto', color: 'bg-[#facc15]' },
     ]
 
     const userEmail = session?.user?.email || 'Visitante'
@@ -137,7 +139,9 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                                 <span
                                                     className={`text-xs font-bold ${currentTheme === t.id
                                                         ? 'text-primary'
-                                                        : 'text-slate-600 group-hover:text-slate-900'
+                                                        : ['darkBlue', 'black'].includes(currentTheme)
+                                                            ? 'text-slate-600 group-hover:text-primary'
+                                                            : 'text-slate-600 group-hover:text-slate-900'
                                                         }`}
                                                 >
                                                     {t.name}

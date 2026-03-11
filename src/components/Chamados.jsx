@@ -44,7 +44,7 @@ const ChamadoCard = ({ title, date, status, priority, category, foto_url, descri
             <div className="z-10 relative">
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-slate-100 border border-card-border flex items-center justify-center shrink-0">
+                        <div className="theme-icon-box size-10 rounded-xl bg-slate-100 border border-card-border flex items-center justify-center shrink-0">
                             <Wrench className="text-primary group-hover:rotate-12 transition-transform" size={20} />
                         </div>
                         <div>

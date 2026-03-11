@@ -45,7 +45,7 @@ export const PostCard = ({ postId, author, avatar, time, content, likes, comment
     return (
         <div className="bg-surface rounded-3xl border border-card-border p-6 md:p-8 hover:bg-white/[0.01] transition-all border-l-4 border-l-primary/20">
             <div className="flex items-start gap-4">
-                <div className="size-12 rounded-2xl bg-slate-200 border border-card-border overflow-hidden shrink-0 shadow-lg flex items-center justify-center text-xl font-bold text-slate-600 uppercase">
+                <div className="theme-icon-box size-12 rounded-2xl bg-slate-200 border border-card-border overflow-hidden shrink-0 shadow-lg flex items-center justify-center text-xl font-bold text-slate-600 uppercase">
                     {avatar ? <img src={avatar} alt={author} className="w-full h-full object-cover" /> : author[0]}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -219,10 +219,10 @@ export const Mural = ({ session, userProfile }) => {
     }, [userProfile?.notificar_chat])
 
     useEffect(() => {
-        if (userProfile?.condominio_id) {
+        if (session?.user) {
             fetchPosts()
-        } else if (session?.user && !loading) {
-            fetchPosts()
+        } else {
+            setLoading(false)
         }
     }, [userProfile, session])
 
@@ -650,7 +650,7 @@ export const Mural = ({ session, userProfile }) => {
                 <div className="bg-surface rounded-3xl border border-card-border p-6 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 blur-3xl"></div>
                     <div className="flex items-start gap-4 relative">
-                        <div className="size-10 rounded-xl bg-slate-200 border border-card-border overflow-hidden shrink-0 flex items-center justify-center text-primary font-bold uppercase">
+                        <div className="theme-icon-box size-10 rounded-xl bg-slate-200 border border-card-border overflow-hidden shrink-0 flex items-center justify-center text-primary font-bold uppercase">
                             {currentUser[0]}
                         </div>
                         <div className="flex-1 space-y-4">
@@ -781,7 +781,7 @@ export const Mural = ({ session, userProfile }) => {
                             >
                                 {activeChat?.id === chat.id && activeChat?.type !== 'dm' && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>}
                                 <div className="relative">
-                                    <div className="size-10 rounded-2xl bg-slate-200 border border-card-border flex items-center justify-center text-primary ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                                    <div className="theme-icon-box size-10 rounded-2xl bg-slate-200 border border-card-border flex items-center justify-center text-primary ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
                                         {Icon && <Icon size={20} />}
                                     </div>
                                     {chat.online && <div className="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 rounded-full border-2 border-slate-900 ring-2 ring-green-500/20"></div>}
@@ -806,7 +806,7 @@ export const Mural = ({ session, userProfile }) => {
                                     className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all cursor-pointer group relative"
                                 >
                                     {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>}
-                                    <div className="size-10 rounded-2xl bg-slate-200 border border-card-border flex items-center justify-center text-primary font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                                    <div className="theme-icon-box size-10 rounded-2xl bg-slate-200 border border-card-border flex items-center justify-center text-primary font-bold text-sm shrink-0 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
                                         {(m.nome || '?')[0].toUpperCase()}
                                     </div>
                                     <div className="flex-1 min-w-0">

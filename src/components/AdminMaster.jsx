@@ -245,7 +245,7 @@ export const AdminMaster = ({ session, userProfile, setUserProfile, setActiveTab
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
                             <div className="flex items-center justify-center">
-                                <img src="/logo.png" alt="Gestor360 Logo" className="h-[42px] object-contain" />
+                                <img src="/logo.png" alt="Gestor360 Logo" className="app-logo h-[42px] object-contain" />
                             </div>
                             <h2 className="text-slate-900 text-3xl font-black tracking-tight">Painel Root</h2>
                         </div>
@@ -328,7 +328,7 @@ export const AdminMaster = ({ session, userProfile, setUserProfile, setActiveTab
                                                 >
                                                     <td className="px-6 py-5">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="size-10 rounded-xl bg-slate-200 flex items-center justify-center border border-card-border">
+                                                            <div className="theme-icon-box size-10 rounded-xl bg-slate-200 flex items-center justify-center border border-card-border">
                                                                 <Building2 size={18} className="text-slate-600" />
                                                             </div>
                                                             <div className="flex flex-col">
@@ -522,7 +522,7 @@ export const AdminMaster = ({ session, userProfile, setUserProfile, setActiveTab
                             </div>
                         ) : (
                             <div className="bg-surface/50 rounded-[40px] border border-card-border border-dashed p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xl h-[400px]">
-                                <div className="size-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 border border-card-border">
+                                <div className="theme-icon-box size-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 border border-card-border">
                                     <Building2 size={40} />
                                 </div>
                                 <div className="max-w-[200px]">

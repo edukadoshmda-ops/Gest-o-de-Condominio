@@ -144,7 +144,7 @@ export const Perfil = ({ session, userProfile }) => {
                     <div className="relative mb-6">
                         <div
                             onClick={() => !uploadingAvatar && fileInputRef.current?.click()}
-                            className={`size-32 rounded-[40px] bg-slate-200 border-4 border-card-border flex items-center justify-center relative z-10 transition-all duration-500 shadow-xl shadow-black/50 overflow-hidden ${!uploadingAvatar && 'cursor-pointer hover:border-primary/50 group'}`}
+                            className={`theme-icon-box size-32 rounded-[40px] bg-slate-200 border-4 border-card-border flex items-center justify-center relative z-10 transition-all duration-500 shadow-xl shadow-black/50 overflow-hidden ${!uploadingAvatar && 'cursor-pointer hover:border-primary/50 group'}`}
                         >
                             {uploadingAvatar ? (
                                 <Loader2 className="animate-spin text-primary" size={32} />

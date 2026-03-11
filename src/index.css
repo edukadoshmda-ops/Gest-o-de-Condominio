@@ -66,3 +66,42 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--scrollbar-thumb)) transparent;
 }
+
+/* Touch scroll suave no mobile */
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Temas escuros: texto escuro vira branco para contraste */
+.theme-dark .text-slate-800,
+.theme-dark .text-slate-900,
+.theme-dark .text-slate-700,
+.theme-dark .text-slate-600,
+.theme-dark .text-slate-500 {
+  color: rgb(248 250 252);
+}
+.theme-dark .text-slate-400,
+.theme-dark .text-slate-300 {
+  color: rgb(203 213 225);
+}
+
+/* Temas escuros: ícones em caixas claras usam cor primária para contraste */
+.theme-dark .theme-icon-box {
+  background: rgb(51 65 85) !important;
+  border-color: rgb(71 85 105) !important;
+  color: rgb(var(--primary)) !important;
+}
+.theme-dark .theme-icon-box svg,
+.theme-dark .theme-icon-box * {
+  color: inherit !important;
+}
+
+/* Temas escuros: hover claro (bg-slate-100) vira escuro para texto branco visível */
+.theme-dark .hover\:bg-slate-100:hover {
+  background-color: rgb(51 65 85) !important;
+}
+
+/* Temas escuros: logo - azul fica branco, laranja permanece (clareia o azul) */
+.theme-dark .app-logo {
+  filter: brightness(1.7) contrast(1.15) saturate(1.2);
+}

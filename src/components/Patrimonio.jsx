@@ -681,7 +681,7 @@ export const Patrimonio = ({ session, userProfile }) => {
                         }
                         return atividades.map((log, i) => (
                             <div key={i} className="flex items-center gap-4 p-5 bg-background border border-card-border rounded-2xl">
-                                <div className="size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shrink-0">{(log.action || 'A')[0]}</div>
+                                <div className="theme-icon-box size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shrink-0">{(log.action || 'A')[0]}</div>
                                 <div className="flex-1">
                                     <p className="text-slate-900 text-sm font-bold">{log.action}</p>
                                     <p className="text-slate-500 text-[10px] font-medium uppercase tracking-wider mt-0.5">{log.date}</p>

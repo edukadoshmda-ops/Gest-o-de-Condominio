@@ -163,7 +163,7 @@ export const GestaoUsuarios = ({ session, userProfile }) => {
                                     <tr key={u.id} className="hover:bg-white/[0.01] transition-colors">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="size-10 rounded-full bg-slate-200 border border-card-border flex items-center justify-center text-slate-600 font-bold uppercase shrink-0">
+                                                <div className="theme-icon-box size-10 rounded-full bg-slate-200 border border-card-border flex items-center justify-center text-slate-600 font-bold uppercase shrink-0">
                                                     {u.nome ? u.nome[0] : '?'}
                                                 </div>
                                                 <div className="flex flex-col">

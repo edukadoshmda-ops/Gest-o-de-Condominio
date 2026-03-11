@@ -29,7 +29,7 @@ const ConfigItem = ({ icon: Icon, label, description, rightElement, onClick }) =
         className={`flex items-center justify-between p-4 rounded-2xl bg-background border border-card-border hover:border-primary/30 transition-all ${onClick ? 'cursor-pointer group' : ''}`}
     >
         <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-slate-200 border border-card-border flex items-center justify-center text-slate-600 group-hover:text-primary transition-colors">
+            <div className="theme-icon-box size-10 rounded-xl bg-slate-200 border border-card-border flex items-center justify-center text-slate-600 group-hover:text-primary transition-colors">
                 <Icon size={20} />
             </div>
             <div>

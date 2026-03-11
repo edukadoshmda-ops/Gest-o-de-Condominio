@@ -30,11 +30,10 @@ export const Visitantes = ({ session, userProfile }) => {
     })
 
     useEffect(() => {
-        if (userProfile?.condominio_id) {
+        if (session?.user) {
             fetchVisitantes()
-        } else if (session?.user && !loading) {
-            // Se tem sessão mas não tem perfil ainda, tenta carregar para não ficar vazio
-            fetchVisitantes()
+        } else {
+            setLoading(false)
         }
     }, [userProfile, session])
 
@@ -243,7 +242,7 @@ export const Visitantes = ({ session, userProfile }) => {
                                         <QrCode size={40} className="text-slate-900/5 group-hover:text-primary/10 transition-colors" />
                                     </div>
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className="size-12 rounded-2xl bg-slate-100 border border-card-border flex items-center justify-center">
+                                        <div className="theme-icon-box size-12 rounded-2xl bg-slate-100 border border-card-border flex items-center justify-center">
                                             {pass.relacao === 'Serviço' ? (
                                                 <Clock className="text-primary" size={24} />
                                             ) : (
@@ -291,7 +290,7 @@ export const Visitantes = ({ session, userProfile }) => {
                             ) : visitantes.map((visit, i) => (
                                 <div key={visit.id || i} className="p-6 flex items-center justify-between hover:bg-white/[0.01] transition-colors group">
                                     <div className="flex items-center gap-4">
-                                        <div className="size-10 rounded-xl bg-slate-200 flex items-center justify-center font-bold text-slate-600 group-hover:text-primary transition-colors uppercase">
+                                        <div className="theme-icon-box size-10 rounded-xl bg-slate-200 flex items-center justify-center font-bold text-slate-600 group-hover:text-primary transition-colors uppercase">
                                             {visit.nome ? visit.nome[0] : '?'}
                                         </div>
                                         <div>

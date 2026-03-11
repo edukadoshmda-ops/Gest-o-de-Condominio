@@ -57,6 +57,18 @@ const THEMES = {
         surface: '255 255 255',
         'card-border': '226 232 240',
     },
+    darkBlue: {
+        primary: '56 189 248', // Sky-400
+        background: '15 23 42', // slate-900
+        surface: '30 41 59', // slate-800
+        'card-border': '51 65 85', // slate-700
+    },
+    black: {
+        primary: '250 204 21', // Amber-400
+        background: '3 7 18', // quase preto
+        surface: '15 23 42', // slate-900
+        'card-border': '30 41 59', // slate-800
+    },
 }
 
 const themes = Object.keys(THEMES).map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }))
@@ -69,7 +81,7 @@ const App = () => {
         if (window.location.pathname === '/gestor-projetos') return <GestorProjetos />;
     }
 
-    const [activeTab, setActiveTab] = useState('mural')
+    const [activeTab, setActiveTab] = useState('inicio')
     const [searchTerm, setSearchTerm] = useState('')
     const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'emerald')
     const [drawerOpen, setDrawerOpen] = useState(false)
@@ -224,15 +236,16 @@ const App = () => {
     }
 
     if (loadingAuth) {
+        const isDark = ['darkBlue', 'black'].includes(theme)
         return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 font-bold text-slate-900">
+            <div className={`min-h-screen bg-background flex flex-col items-center justify-center gap-6 font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <div className="uppercase tracking-widest text-xs">Iniciando Sistema...</div>
-                <p className="text-xs text-slate-500 font-normal max-w-xs text-center">
+                <p className={`text-xs font-normal max-w-xs text-center ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
                     Se demorar, clique abaixo para ir ao login
                 </p>
                 <button
                     onClick={() => setLoadingAuth(false)}
-                    className="px-6 py-3 rounded-xl bg-primary/20 text-slate-800 text-xs uppercase tracking-wider hover:bg-primary/30 transition"
+                    className={`px-6 py-3 rounded-xl text-xs uppercase tracking-wider transition ${isDark ? 'bg-primary/30 text-white hover:bg-primary/40' : 'bg-primary/20 text-slate-800 hover:bg-primary/30'}`}
                 >
                     Ir ao Login
                 </button>
@@ -241,11 +254,12 @@ const App = () => {
     }
 
     if (errorAuth) {
+        const isDark = ['darkBlue', 'black'].includes(theme)
         return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 text-center max-w-md mx-auto">
+            <div className={`min-h-screen bg-background flex flex-col items-center justify-center p-8 text-center max-w-md mx-auto ${isDark ? 'text-white' : ''}`}>
                 <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6 font-bold">X</div>
-                <h2 className="text-2xl font-black text-slate-900 mb-2">Erro de Acesso</h2>
-                <p className="text-slate-500 font-medium mb-8">{errorAuth}</p>
+                <h2 className={`text-2xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Erro de Acesso</h2>
+                <p className={`font-medium mb-8 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>{errorAuth}</p>
                 <button onClick={() => {
                     setErrorAuth(null)
                     supabase.auth.signOut()
@@ -305,9 +319,9 @@ const App = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-background text-slate-800 font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden">
+        <div className={`flex min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden ${['darkBlue', 'black'].includes(theme) ? 'theme-dark text-white' : 'text-slate-800'}`}>
             {/* Sidebar - Desktop */}
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userProfile={userProfile} />
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userProfile={userProfile} onLogout={handleLogout} />
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0 min-h-screen">
@@ -321,7 +335,7 @@ const App = () => {
                     onSearch={(term) => { setSearchTerm(term); setActiveTab('busca'); }}
                 />
 
-                <main className="flex-1 p-4 md:p-8 xl:p-12 max-w-[1600px] mx-auto w-full pb-32 md:pb-12 h-full">
+                <main className="flex-1 p-4 md:p-8 xl:p-12 max-w-[1600px] mx-auto w-full pb-32 md:pb-12 overflow-y-auto overflow-x-hidden min-h-0 custom-scrollbar">
                     {renderContent()}
                 </main>
 

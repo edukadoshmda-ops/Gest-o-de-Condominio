@@ -18,12 +18,31 @@ import {
     X,
     Loader2,
     Calendar,
-    FileText
+    FileText,
+    CreditCard,
+    Wrench,
+    Bell,
+    Box,
+    Users,
+    BarChart3
 } from 'lucide-react'
+
+const rapidActions = [
+    { id: 'mural', label: 'Mural', icon: MessageSquare, hideFor: 'porteiro' },
+    { id: 'visitantes', label: 'Visitantes', icon: Users },
+    { id: 'encomendas', label: 'Encomendas', icon: Package },
+    { id: 'financeiro', label: 'Financeiro', icon: CreditCard, hideFor: 'porteiro' },
+    { id: 'reservas', label: 'Reservas', icon: Calendar, hideFor: 'porteiro' },
+    { id: 'chamados', label: 'Chamados', icon: Wrench, hideFor: 'porteiro' },
+    { id: 'relatorios', label: 'Relatórios', icon: BarChart3, onlyFor: ['sindico', 'admin_master'] },
+    { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master'] },
+    { id: 'notificacoes', label: 'Notificações', icon: Bell },
+    { id: 'documentos', label: 'Atas e Regulamentos', icon: FileText }
+]
 
 const ActionButton = ({ icon: Icon, label, color = 'text-slate-600', bg = 'bg-surface', border = 'border-card-border', onClick }) => (
     <div className="flex flex-col items-center gap-2 shrink-0 group cursor-pointer" onClick={onClick}>
-        <div className={`size-16 rounded-2xl border ${border} ${bg} flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(236,91,19,0.15)] transition-all duration-300`}>
+        <div className={`theme-icon-box size-16 rounded-2xl border ${border} ${bg} flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(236,91,19,0.15)] transition-all duration-300`}>
             <Icon className={`${color} group-hover:scale-110 transition-transform`} size={24} />
         </div>
         <span className="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-wider group-hover:text-slate-700 transition-colors">{label}</span>
@@ -56,6 +75,12 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
     const [indicadoresSindico, setIndicadoresSindico] = useState({ reservas: 0, encomendasPendentes: 0, faturasVencidas: 0, avisos: 0 })
 
     const isSindico = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master'
+
+    const filteredRapidActions = rapidActions.filter(a => {
+        if (a.hideFor === userProfile?.tipo) return false
+        if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
+        return true
+    })
 
     useEffect(() => {
         if (userProfile) {
@@ -347,7 +372,26 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
     const encomendaDisplay = encomenda
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-8">
+            {/* Ações Rápidas - conteúdo que estava no Painel */}
+            <section>
+                <h2 className="text-slate-900 text-sm font-black uppercase tracking-widest mb-4">Ações Rápidas</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {filteredRapidActions.map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id)}
+                            className="flex items-center gap-3 p-4 bg-surface rounded-2xl border border-card-border hover:border-primary/40 hover:shadow-lg transition-all text-left group"
+                        >
+                            <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shrink-0">
+                                <Icon size={24} />
+                            </div>
+                            <span className="text-slate-900 font-bold text-sm truncate">{label}</span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
             {isSindico && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div onClick={() => setActiveTab('reservas')} className="bg-surface rounded-2xl border border-card-border p-4 cursor-pointer hover:border-primary/40 transition-all">
