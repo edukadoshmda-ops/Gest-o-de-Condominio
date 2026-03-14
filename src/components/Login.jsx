@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../lib/toast'
-import { KeyRound, Mail, Loader2, Building2, ArrowLeft } from 'lucide-react'
+import { KeyRound, Mail, Loader2, Building2, ArrowLeft, Sparkles } from 'lucide-react'
 
-export const Login = ({ onSession, onBack }) => {
+export const Login = ({ onSession, onBack, initialRegistering = false, initialData = null }) => {
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('')
@@ -13,6 +13,15 @@ export const Login = ({ onSession, onBack }) => {
     const [nome, setNome] = useState('')
     const [nomeCondominio, setNomeCondominio] = useState('')
     const [tipoSelecionado, setTipoSelecionado] = useState('morador')
+
+    useEffect(() => {
+        if (!initialData) return
+        setNome(initialData.nome || '')
+        setEmail(initialData.email || '')
+        setNomeCondominio(initialData.nomeCondominio || '')
+        setTipoSelecionado(initialData.tipo || 'sindico')
+        setIsRegistering(initialRegistering)
+    }, [initialData, initialRegistering])
 
     const handleAuth = async (e) => {
         e.preventDefault()
@@ -126,6 +135,23 @@ export const Login = ({ onSession, onBack }) => {
                     </p>
                 </div>
 
+                {initialData?.trialEndsAt && isRegistering && (
+                    <div className="mb-6 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-left">
+                        <div className="flex items-start gap-3">
+                            <div className="size-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+                                <Sparkles size={18} />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sky-700 text-[10px] font-black uppercase tracking-[0.2em]">Teste grátis ativado</p>
+                                <p className="text-slate-900 text-sm font-bold">Seu período de 30 dias já começou.</p>
+                                <p className="text-slate-600 text-xs">
+                                    Conclua o cadastro do síndico para acessar o condomínio. Validade do teste até {initialData.trialEndsAt}.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {error && (
                     <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold p-3 rounded-xl text-center mb-6">
                         {error}
@@ -168,6 +194,7 @@ export const Login = ({ onSession, onBack }) => {
                                     <select
                                         value={tipoSelecionado}
                                         onChange={(e) => setTipoSelecionado(e.target.value)}
+                                        disabled={!!initialData?.trialEndsAt}
                                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all appearance-none cursor-pointer"
                                     >
                                         <option value="morador">Morador</option>
@@ -175,6 +202,9 @@ export const Login = ({ onSession, onBack }) => {
                                         <option value="sindico">Síndico (Gestor)</option>
                                     </select>
                                 </div>
+                                {initialData?.trialEndsAt && (
+                                    <p className="text-[9px] text-slate-500 font-medium ml-1">No teste grátis, o primeiro cadastro é criado como síndico responsável.</p>
+                                )}
                             </div>
                         </>
                     )}

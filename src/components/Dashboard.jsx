@@ -467,7 +467,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                         <div className="bg-surface rounded-3xl border border-dashed border-card-border p-8 flex flex-col items-center justify-center min-h-[12rem]">
                             <span className="text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block">Aviso do Síndico</span>
                             <p className="text-slate-600 text-sm text-center mb-4">Nenhum aviso publicado. Publique o primeiro aviso oficial.</p>
-                            <button onClick={() => setShowNovoAvisoModal(true)} className="py-3 px-6 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+                            <button onClick={() => setShowNovoAvisoModal(true)} className="theme-primary-contrast py-3 px-6 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all">
                                 NOVO AVISO
                             </button>
                         </div>
@@ -528,7 +528,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12 blur-3xl"></div>
                         <div className="flex items-center justify-between mb-6 relative">
                             <h3 className="text-slate-900 font-bold text-sm tracking-widest uppercase">Enquete Ativa</h3>
-                            {enquete && <span className="bg-primary text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-primary/20">NOVO</span>}
+                            {enquete && <span className="theme-primary-contrast bg-primary text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-primary/20">NOVO</span>}
                             {isSindico && (
                                 <button onClick={() => setShowNovaEnqueteModal(true)} className="text-primary text-[10px] font-black uppercase tracking-wider hover:underline">
                                     {enquete ? 'NOVA ENQUETE' : 'CRIAR ENQUETE'}
@@ -568,7 +568,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                                     onClick={handleVote}
                                     className={`w-full mt-8 py-3.5 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2 ${hasVoted
                                         ? 'bg-primary/15 text-primary border border-primary/30 shadow-none cursor-default'
-                                        : 'bg-primary text-white hover:bg-white hover:text-primary shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed'
+                                        : 'theme-primary-contrast bg-primary text-white hover:bg-white hover:text-primary shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed'
                                         }`}
                                 >
                                     {voting ? (
@@ -586,7 +586,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                             <div className="py-4">
                                 <p className="text-slate-600 text-sm mb-4">Nenhuma enquete ativa no momento.</p>
                                 {isSindico && (
-                                    <button onClick={() => setShowNovaEnqueteModal(true)} className="w-full py-3.5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+                                    <button onClick={() => setShowNovaEnqueteModal(true)} className="theme-primary-contrast w-full py-3.5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
                                         CRIAR ENQUETE
                                     </button>
                                 )}

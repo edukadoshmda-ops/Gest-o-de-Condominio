@@ -38,20 +38,24 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile, onLogout }) => {
         <span className="text-xs font-black tracking-tight text-slate-900 leading-tight -mt-1">Gestão de Condomínio</span>
       </div>
 
-      {/* Menu com barra de rolagem - acesso a todos os itens */}
-      <nav className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-2 custom-scrollbar">
-        <div className="space-y-1">
-          <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
+      {/* Menu com grupos mais distribuídos para melhorar a leitura */}
+      <nav className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-4 custom-scrollbar">
+        <div className="flex flex-col gap-10">
+          <div className="space-y-4">
+            <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
 
-          {userProfile?.tipo === 'admin_master' && (
-            <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
-          )}
-          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
-            <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
-          )}
+            {userProfile?.tipo === 'admin_master' && (
+              <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
+            )}
+            {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+              <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
+            )}
+          </div>
 
-          <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
-          <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
+          <div className="space-y-4 pt-2">
+            <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
+            <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
+          </div>
         </div>
       </nav>
 

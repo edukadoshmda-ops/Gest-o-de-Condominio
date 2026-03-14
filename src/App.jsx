@@ -91,6 +91,7 @@ const App = () => {
     const [errorAuth, setErrorAuth] = useState(null)
     const [showLogin, setShowLogin] = useState(false)
     const [showTrailer, setShowTrailer] = useState(false)
+    const [loginPrefill, setLoginPrefill] = useState(null)
 
     const fetchUserProfile = async (userId, userEmail) => {
         try {
@@ -235,6 +236,11 @@ const App = () => {
         await supabase.auth.signOut()
     }
 
+    const handleStartTrial = (prefill) => {
+        setLoginPrefill(prefill)
+        setShowLogin(true)
+    }
+
     if (loadingAuth) {
         const isDark = ['darkBlue', 'black'].includes(theme)
         return (
@@ -273,7 +279,25 @@ const App = () => {
     if (!session) {
         return (
             <>
-                {showLogin ? <Login onBack={() => setShowLogin(false)} /> : <Landing onEnter={() => setShowLogin(true)} onWatchTrailer={() => setShowTrailer(true)} />}
+                {showLogin ? (
+                    <Login
+                        onBack={() => {
+                            setShowLogin(false)
+                            setLoginPrefill(null)
+                        }}
+                        initialRegistering={!!loginPrefill}
+                        initialData={loginPrefill}
+                    />
+                ) : (
+                    <Landing
+                        onEnter={() => {
+                            setLoginPrefill(null)
+                            setShowLogin(true)
+                        }}
+                        onStartTrial={handleStartTrial}
+                        onWatchTrailer={() => setShowTrailer(true)}
+                    />
+                )}
                 {showTrailer && <Trailer onFinish={() => setShowTrailer(false)} />}
             </>
         )

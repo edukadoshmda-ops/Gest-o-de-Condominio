@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { useToast } from '../lib/toast'
 import {
     LayoutDashboard,
     MessageSquare,
@@ -13,15 +15,47 @@ import {
     LogIn,
     CheckCircle2,
     Download,
-    Play
+    Play,
+    Sparkles,
+    X,
+    Phone,
+    Mail,
+    User,
+    Building2,
+    Loader2
 } from 'lucide-react'
+import { BlogCondominio } from './BlogCondominio'
 
-export const Landing = ({ onEnter, onWatchTrailer }) => {
+const formatDate = (date) => {
+    const [year, month, day] = String(date).split('-')
+    return `${day}/${month}/${year}`
+}
+
+const TrialCta = ({ onClick, compact = false }) => (
+    <button
+        onClick={onClick}
+        className={`inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 text-slate-900 font-black shadow-xl shadow-amber-400/25 hover:scale-[1.02] transition ${compact ? 'px-6 py-3 text-sm' : 'px-8 py-4 text-sm md:text-base'}`}
+    >
+        <Sparkles size={18} />
+        Teste Gratis por 30 Dias
+    </button>
+)
+
+export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
+    const { toast } = useToast()
     const [openFaq, setOpenFaq] = useState(null)
     const [activeRole, setActiveRole] = useState('sindico')
     const [deferredPrompt, setDeferredPrompt] = useState(null)
     const [showInstall, setShowInstall] = useState(false)
     const [isInstalled, setIsInstalled] = useState(false)
+    const [showTrialModal, setShowTrialModal] = useState(false)
+    const [trialLoading, setTrialLoading] = useState(false)
+    const [trialForm, setTrialForm] = useState({
+        nomeSindico: '',
+        telefone: '',
+        email: '',
+        nomeCondominio: ''
+    })
 
     useEffect(() => {
         const checkInstalled = () => {
@@ -49,6 +83,47 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
         const { outcome } = await deferredPrompt.userChoice
         if (outcome === 'accepted') setShowInstall(false)
         setDeferredPrompt(null)
+    }
+
+    const updateTrialForm = (field, value) => {
+        setTrialForm(prev => ({ ...prev, [field]: value }))
+    }
+
+    const handleStartTrialLead = async (e) => {
+        e.preventDefault()
+        setTrialLoading(true)
+
+        try {
+            const payload = {
+                p_nome_sindico: trialForm.nomeSindico.trim(),
+                p_telefone: trialForm.telefone.trim(),
+                p_email: trialForm.email.trim().toLowerCase(),
+                p_nome_condominio: trialForm.nomeCondominio.trim()
+            }
+
+            const { data, error } = await supabase.rpc('start_trial_lead', payload)
+            if (error) throw error
+
+            const result = Array.isArray(data) ? data[0] : data
+            if (!result?.nome_condominio) {
+                throw new Error('Nao foi possivel iniciar o teste gratis.')
+            }
+
+            toast('Teste gratis ativado com sucesso! Agora finalize o cadastro do sindico.', 'success')
+            setShowTrialModal(false)
+            setTrialForm({ nomeSindico: '', telefone: '', email: '', nomeCondominio: '' })
+            onStartTrial?.({
+                nome: trialForm.nomeSindico.trim(),
+                email: trialForm.email.trim().toLowerCase(),
+                nomeCondominio: result.nome_condominio,
+                tipo: 'sindico',
+                trialEndsAt: formatDate(result.trial_ends_at)
+            })
+        } catch (error) {
+            toast(error.message || 'Erro ao iniciar teste gratis.', 'error')
+        } finally {
+            setTrialLoading(false)
+        }
     }
 
     const features = [
@@ -133,6 +208,9 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                         >
                             <Play size={20} className="fill-sky-600" /> Ver Apresentação
                         </button>
+                    </div>
+                    <div className="mt-6">
+                        <TrialCta onClick={() => setShowTrialModal(true)} />
                     </div>
                 </div>
             </section>
@@ -225,6 +303,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                 </div>
             </section>
 
+            {/* Blog do Síndico */}
+            <section className="py-20 px-4 bg-slate-50">
+                <BlogCondominio embedded />
+                <div className="max-w-6xl mx-auto pt-10 text-center">
+                    <TrialCta onClick={() => setShowTrialModal(true)} />
+                </div>
+            </section>
+
             {/* Planos e Assinatura */}
             <section className="py-24 px-4 bg-white overflow-hidden relative">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
@@ -272,14 +358,14 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                                     <h4 className="text-sky-400 font-black text-[10px] uppercase tracking-[0.3em] mb-8 pr-4">O que está incluído no Plano:</h4>
                                     <ul className="grid grid-cols-1 gap-5">
                                         {[
-                                            'Ideal para pequenos condomínios',
+                                            'Ideal para pequenos, médios e grandes condomínios',
                                             'Mural e Chat completo',
                                             'Controle de Encomendas Automático',
-                                            'Gestão profissional de médio porte',
+                                            'Gestão profissional de excelência',
                                             'Todos os recursos do Pro incluídos',
                                             'Reservas de Áreas Comuns',
                                             'Gestão Financeira Completa',
-                                            'Até 500 usuários ativos',
+                                            'Usuários ilimitados ativos',
                                             'Suporte Prioritário 24/7',
                                             'Onboarding e Treinamento'
                                         ].map((item, idx) => (
@@ -381,6 +467,9 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                             Assinar Agora <DollarSign size={20} />
                         </a>
                     </div>
+                    <div className="mt-6">
+                        <TrialCta onClick={() => setShowTrialModal(true)} />
+                    </div>
                 </div>
             </section>
 
@@ -408,6 +497,113 @@ export const Landing = ({ onEnter, onWatchTrailer }) => {
                     ) : (
                         <p className="text-slate-500 text-xs">Adicione à tela inicial pelo menu do navegador.</p>
                     )}
+                </div>
+            )}
+
+            {showTrialModal && (
+                <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="w-full max-w-xl rounded-[32px] bg-white border border-slate-200 shadow-2xl p-6 md:p-8 relative">
+                        <button
+                            type="button"
+                            onClick={() => setShowTrialModal(false)}
+                            className="absolute top-5 right-5 size-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition"
+                        >
+                            <X size={18} />
+                        </button>
+
+                        <div className="mb-8">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 border border-amber-200 text-amber-700 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                                <Sparkles size={14} />
+                                Teste Gratis por 30 Dias
+                            </div>
+                            <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">
+                                Cadastre seu condominio e comece agora
+                            </h3>
+                            <p className="text-slate-600 text-sm leading-relaxed">
+                                Preencha os dados do sindico responsavel. O lead sera salvo e o periodo de teste comeca imediatamente apos este cadastro.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleStartTrialLead} className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Sindico</label>
+                                <div className="relative">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={trialForm.nomeSindico}
+                                        onChange={(e) => updateTrialForm('nomeSindico', e.target.value)}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                        placeholder="Ex: Maria Oliveira"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Telefone</label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={trialForm.telefone}
+                                            onChange={(e) => updateTrialForm('telefone', e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                            placeholder="(91) 99999-9999"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">E-mail</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input
+                                            type="email"
+                                            required
+                                            value={trialForm.email}
+                                            onChange={(e) => updateTrialForm('email', e.target.value)}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                            placeholder="sindico@condominio.com"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Condominio</label>
+                                <div className="relative">
+                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={trialForm.nomeCondominio}
+                                        onChange={(e) => updateTrialForm('nomeCondominio', e.target.value)}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                        placeholder="Ex: Residencial Solar das Palmeiras"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="rounded-2xl bg-sky-50 border border-sky-100 p-4">
+                                <p className="text-sky-700 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Importante</p>
+                                <p className="text-slate-600 text-sm">
+                                    Apos enviar, o lead sera salvo, o condominio sera criado com validade inicial de 30 dias e voce sera levado para concluir o cadastro do login do sindico.
+                                </p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={trialLoading}
+                                className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-amber-400 text-slate-900 font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-amber-400/25 hover:scale-[1.01] transition disabled:opacity-60"
+                            >
+                                {trialLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                                Iniciar Teste Gratis
+                            </button>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

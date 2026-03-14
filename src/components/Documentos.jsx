@@ -102,7 +102,12 @@ export const Documentos = ({ session, userProfile }) => {
     const canEdit = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master'
 
     useEffect(() => {
-        if (userProfile?.condominio_id) fetchDocs()
+        if (userProfile?.condominio_id) {
+            fetchDocs()
+        } else {
+            setDocumentos([])
+            setLoading(false)
+        }
     }, [userProfile?.condominio_id])
 
     const fetchDocs = async () => {
@@ -196,6 +201,19 @@ export const Documentos = ({ session, userProfile }) => {
         return (
             <div className="flex items-center justify-center min-h-[200px]">
                 <Loader2 className="animate-spin text-primary" size={32} />
+            </div>
+        )
+    }
+
+    if (!userProfile?.condominio_id) {
+        return (
+            <div className="space-y-6">
+                <h1 className="text-2xl font-black text-slate-900">Atas e Regulamentos</h1>
+                <div className="bg-surface rounded-3xl border border-dashed border-card-border p-8 text-center">
+                    <p className="text-slate-600 text-sm">
+                        Nenhum condomínio foi vinculado ao seu perfil no momento.
+                    </p>
+                </div>
             </div>
         )
     }

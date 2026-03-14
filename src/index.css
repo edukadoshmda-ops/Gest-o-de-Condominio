@@ -105,3 +105,18 @@ body {
 .theme-dark .app-logo {
   filter: brightness(1.7) contrast(1.15) saturate(1.2);
 }
+
+/* Temas azul escuro e preto: texto em fundo primário fica escuro */
+[data-theme="black"] .theme-primary-contrast,
+[data-theme="darkBlue"] .theme-primary-contrast,
+[data-theme="black"] :is(.bg-primary, .bg-primary\/90, .bg-primary\/80).text-white,
+[data-theme="darkBlue"] :is(.bg-primary, .bg-primary\/90, .bg-primary\/80).text-white {
+  color: rgb(15 23 42) !important;
+}
+
+[data-theme="black"] .theme-primary-contrast *,
+[data-theme="darkBlue"] .theme-primary-contrast *,
+[data-theme="black"] :is(.bg-primary, .bg-primary\/90, .bg-primary\/80).text-white *,
+[data-theme="darkBlue"] :is(.bg-primary, .bg-primary\/90, .bg-primary\/80).text-white * {
+  color: inherit !important;
+}
