@@ -73,6 +73,13 @@ const THEMES = {
 
 const themes = Object.keys(THEMES).map(id => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }))
 
+// E-mails com acesso super admin (entram mesmo sem perfil em usuarios)
+const SUPER_ADMIN_EMAILS = [
+  'edukadoshmda@gmail.com',
+  'edukadosh@yahoo.com.br',
+  (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
+].filter(Boolean)
+
 const App = () => {
     // Intercepta a rota estática para simular a página do Next.js sem autenticação
     if (typeof window !== 'undefined') {
@@ -107,10 +114,7 @@ const App = () => {
                 // Perfil não existe. Para evitar travar, em vez de criar automático, vamos avisar o usuário.
                 console.log("Perfil não encontrado.")
 
-                // Se for o Admin Master (edukadoshmda@gmail.com), ele deve poder entrar para criar o primeiro condo
-                const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
-                const adminEmailCheck = envEmail || 'edukadoshmda@gmail.com'
-                const isSuperAdmin = adminEmailCheck && userEmail?.toLowerCase() === adminEmailCheck
+                const isSuperAdmin = userEmail && SUPER_ADMIN_EMAILS.includes(userEmail.toLowerCase())
 
                 if (isSuperAdmin) {
                     // Busca o primeiro condomínio disponível se existir para permitir testes
@@ -151,10 +155,7 @@ const App = () => {
                 }
             }
 
-            // Superadmin: e-mail em VITE_SUPERADMIN_EMAIL ou fallback edukadoshmda@gmail.com
-            const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
-            const superAdminEmail = envEmail || 'edukadoshmda@gmail.com'
-            const isSuperAdmin = superAdminEmail && userEmail?.toLowerCase() === superAdminEmail
+            const isSuperAdmin = userEmail && SUPER_ADMIN_EMAILS.includes(userEmail.toLowerCase())
 
             const finalProfile = { ...data }
             if (isSuperAdmin) {
@@ -166,9 +167,7 @@ const App = () => {
             setUserProfile(finalProfile)
         } catch (error) {
             console.error('Erro ao buscar perfil:', error)
-            const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
-            const superAdminEmail = envEmail || 'edukadoshmda@gmail.com'
-            const isSuperAdmin = superAdminEmail && userEmail?.toLowerCase() === superAdminEmail
+            const isSuperAdmin = userEmail && SUPER_ADMIN_EMAILS.includes(userEmail.toLowerCase())
             if (isSuperAdmin) {
                 // Busca primeiro condomínio para o perfil superadmin
                 const { data: primeiroCondo } = await supabase.from('condominios').select('id, nome, status').limit(1).maybeSingle()
@@ -235,7 +234,19 @@ const App = () => {
     }, [])
 
     const handleLogout = async () => {
-        await supabase.auth.signOut()
+        try {
+            await supabase.auth.signOut()
+        } catch (error) {
+            console.error('Erro ao sair:', error)
+        } finally {
+            // Limpa tudo localmente para garantir o logout
+            localStorage.clear()
+            setSession(null)
+            setUserProfile(null)
+            setActiveTab('inicio')
+            setShowLogin(false)
+            window.location.href = '/' // Força o retorno para a landing
+        }
     }
 
     const handleStartTrial = (prefill) => {

@@ -48,11 +48,9 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile, onLogout }) => {
             {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
               <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
             )}
-          </div>
 
-          <div className="space-y-4">
             <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
-            <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
+            <SidebarItem icon={User} label="Perfil do Morador" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
             {(userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
               <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
             )}
@@ -106,15 +104,16 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
           {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
             <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => go('usuarios')} showLabel compact />
           )}
-        </nav>
 
-        {/* Footer Fixo - padding menor no celular */}
-        <div className="px-4 py-3 pt-3 border-t border-card-border space-y-1 shrink-0">
           <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => go('config')} showLabel compact />
           <SidebarItem icon={User} label="Perfil do Morador" active={activeTab === 'perfil'} onClick={() => go('perfil')} showLabel compact />
           {(userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
             <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => go('admin')} showLabel compact />
           )}
+        </nav>
+
+        {/* Footer Fixo - padding menor no celular */}
+        <div className="px-4 py-3 pt-3 border-t border-card-border space-y-1 shrink-0">
           <button
             onClick={() => { onLogout?.(); onClose(); }}
             className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-300 text-red-500 hover:bg-red-500/10 font-bold text-sm"

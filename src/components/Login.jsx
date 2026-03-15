@@ -78,16 +78,16 @@ export const Login = ({ onSession, onBack, initialRegistering = false, initialDa
                 }
 
                 if (authData?.user) {
-                    // 3. Criar perfil na tabela 'usuarios'
+                    // 3. Criar ou atualizar perfil na tabela 'usuarios' usando upsert para evitar erro de duplicidade
                     const { error: profileError } = await supabase
                         .from('usuarios')
-                        .insert({
+                        .upsert({
                             id: authData.user.id,
                             condominio_id: condoData.id,
                             nome: nome,
                             tipo: tipoSelecionado,
                             ativo: true
-                        })
+                        }, { onConflict: 'id' })
 
                     if (profileError) throw profileError
                 }
@@ -102,19 +102,16 @@ export const Login = ({ onSession, onBack, initialRegistering = false, initialDa
                 if (error) throw error
 
                 if (data?.user) {
-                    // Após logar, verifica se o usuário já tem registro na tabela 'usuarios'
-                    const { data: userProfile, error: profileCheckError } = await supabase
-                        .from('usuarios')
-                        .select('id')
-                        .eq('id', data.user.id)
-                        .maybeSingle()
-
-                    // Se não tiver perfil, o App.jsx tentará criar ao carregar. Não criamos aqui para evitar
-                    // vincular a condomínio errado (codigoAcesso/nome vazios no login).
+                    // Perfil em usuarios é carregado pelo App.jsx (fetchUserProfile)
                 }
             }
         } catch (err) {
-            setError(err.message || "Erro na autenticação. Verifique os dados.")
+            const msg = err.message || ''
+            if (msg.toLowerCase().includes('invalid login credentials')) {
+                setError('E-mail ou senha incorretos. Confira os dados ou use "Enviar recuperação de senha" no painel do Supabase (Authentication → Users).')
+            } else {
+                setError(msg || 'Erro na autenticação. Verifique os dados.')
+            }
         } finally {
             setLoading(false)
         }
