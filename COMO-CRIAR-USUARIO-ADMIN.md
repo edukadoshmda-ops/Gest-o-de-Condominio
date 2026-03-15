@@ -1,8 +1,18 @@
-# Criar usuário edukadoshmda@gmail.com (Super Admin)
+# Login Super Admin: edukadoshmda@gmail.com / 123456
 
-Se aparecer **"Database error creating new user"** (no script ou no Dashboard), a causa costuma ser um **trigger** na tabela `auth.users` que falha ao criar o usuário.
+## Corrigir o login em 2 passos
 
-## Corrigir o erro antes de criar o usuário
+1. **No Supabase:** abra **SQL Editor** → **New query**. Abra o arquivo **`supabase/FIX-LOGIN-SUPERADMIN.sql`** do projeto, copie **todo** o conteúdo, cole no Editor e clique em **Run**.
+2. **No seu PC** (na pasta do projeto): rode no terminal **`node criar-superadmin.js`**. Deve aparecer "Super admin criado com sucesso".
+3. Entre no app com **edukadoshmda@gmail.com** e senha **123456**.
+
+Se o passo 2 ainda mostrar "Database error", desative em **Authentication** → **Hooks** qualquer "Before user created" / "After user created" e tente de novo.
+
+---
+
+Se aparecer **"Database error creating new user"** (no script ou no Dashboard), a causa costuma ser um **trigger** na tabela `auth.users`. Use o **FIX-LOGIN-SUPERADMIN.sql** acima.
+
+## Corrigir o erro antes de criar o usuário (detalhes)
 
 1. No **Supabase Dashboard**: **SQL Editor** → **New query**.
 2. Abra o arquivo **`supabase/CORRIGIR-ERRO-CRIAR-USUARIO.sql`** do projeto.
