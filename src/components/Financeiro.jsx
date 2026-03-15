@@ -23,7 +23,7 @@ export const Financeiro = ({ session, userProfile }) => {
     const [faturas, setFaturas] = useState([])
     const [usuariosCondo, setUsuariosCondo] = useState([])
     const [loading, setLoading] = useState(true)
-    const isAdmin = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master'
+    const isAdmin = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin'
     const [processing, setProcessing] = useState(false)
     const [showFiltros, setShowFiltros] = useState(false)
     const [filtroStatus, setFiltroStatus] = useState('Todos')
@@ -251,7 +251,7 @@ export const Financeiro = ({ session, userProfile }) => {
             toast('Informe um valor válido maior que zero.', 'error')
             return
         }
-        if (userProfile?.tipo === 'sindico' && !userProfile?.condominio_id) {
+        if ((userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && !userProfile?.condominio_id) {
             toast('Seu perfil precisa estar vinculado a um condomínio. Verifique em Configurações.', 'error')
             return
         }

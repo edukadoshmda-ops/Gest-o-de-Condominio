@@ -13,14 +13,13 @@ import {
   LogOut,
   Box,
   Users,
-  Bell,
   BarChart3
 } from 'lucide-react'
 
 const SidebarItem = ({ icon: Icon, label, active, onClick, showLabel = false }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${active ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-900 hover:bg-slate-100'}`}
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${active ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-800 hover:bg-slate-100 hover:text-slate-900'}`}
   >
     <Icon size={20} className={active ? 'scale-110' : ''} />
     <span className={`font-bold text-sm ${showLabel ? 'block' : 'hidden md:block'}`}>{label}</span>
@@ -35,26 +34,28 @@ export const Sidebar = ({ activeTab, setActiveTab, userProfile, onLogout }) => {
         <div className="flex items-center justify-center w-full">
           <img src="/logo.png" alt="Gestor360 Logo" className="app-logo w-[126px] object-contain drop-shadow-lg drop-shadow-primary/20" />
         </div>
-        <span className="text-xs font-black tracking-tight text-slate-900 leading-tight -mt-1">Gestão de Condomínio</span>
+        <span className="text-xs font-black tracking-tight text-slate-800 leading-tight -mt-1">Gestão de Condomínio</span>
       </div>
 
       {/* Menu com grupos mais distribuídos para melhorar a leitura */}
       <nav className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-4 custom-scrollbar">
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <div className="space-y-4">
             <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
+            <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => setActiveTab('visitantes')} />
+            <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => setActiveTab('encomendas')} />
 
-            {userProfile?.tipo === 'admin_master' && (
-              <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
-            )}
-            {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+            {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
               <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
             )}
           </div>
 
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4">
             <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
             <SidebarItem icon={User} label="Meu Perfil" active={activeTab === 'perfil'} onClick={() => setActiveTab('perfil')} />
+            {(userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
+              <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
+            )}
           </div>
         </div>
       </nav>
@@ -99,11 +100,10 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
         {/* Conteúdo Rolável */}
         <nav className="flex-1 overflow-y-auto px-8 py-4 space-y-2 custom-scrollbar min-h-0">
           <SidebarItem icon={Home} label="Início" active={activeTab === 'inicio'} onClick={() => go('inicio')} showLabel />
+          <SidebarItem icon={Users} label="Visitantes" active={activeTab === 'visitantes'} onClick={() => go('visitantes')} showLabel />
+          <SidebarItem icon={Package} label="Encomendas" active={activeTab === 'encomendas'} onClick={() => go('encomendas')} showLabel />
 
-          {userProfile?.tipo === 'admin_master' && (
-            <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => go('admin')} showLabel />
-          )}
-          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master') && (
+          {(userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
             <SidebarItem icon={Users} label="Gestão de Perfis" active={activeTab === 'usuarios'} onClick={() => go('usuarios')} showLabel />
           )}
         </nav>
@@ -112,6 +112,9 @@ export const Drawer = ({ isOpen, onClose, activeTab, setActiveTab, userProfile, 
         <div className="p-8 pt-4 border-t border-card-border space-y-1 shrink-0">
           <SidebarItem icon={Settings} label="Configurações" active={activeTab === 'config'} onClick={() => go('config')} showLabel />
           <SidebarItem icon={User} label="Perfil do Morador" active={activeTab === 'perfil'} onClick={() => go('perfil')} showLabel />
+          {(userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
+            <SidebarItem icon={ShieldAlert} label="SuperAdmin" active={activeTab === 'admin'} onClick={() => go('admin')} showLabel />
+          )}
           <button
             onClick={() => { onLogout?.(); onClose(); }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-red-500 hover:bg-red-500/10 font-bold text-sm"

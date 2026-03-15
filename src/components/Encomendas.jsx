@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { traduzirErro } from '../lib/erros'
 import { useToast } from '../lib/toast'
 import {
     Package,
@@ -30,7 +31,7 @@ export const Encomendas = ({ session, userProfile }) => {
         descricao: ''
     })
 
-    const isStaff = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'porteiro' || userProfile?.tipo === 'admin_master'
+    const isStaff = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'porteiro' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin'
 
     useEffect(() => {
         if (session?.user) {
@@ -94,7 +95,7 @@ export const Encomendas = ({ session, userProfile }) => {
             setFormData({ unidade: '', bloco: '', remetente: '', descricao: '' })
             fetchEncomendas()
         } catch (error) {
-            toast('Erro ao registrar encomenda: ' + error.message, 'error')
+            toast('Erro ao registrar encomenda: ' + traduzirErro(error.message), 'error')
         } finally {
             setSaving(false)
         }
@@ -116,7 +117,7 @@ export const Encomendas = ({ session, userProfile }) => {
             if (error) throw error
             fetchEncomendas()
         } catch (error) {
-            toast('Erro ao atualizar status: ' + error.message, 'error')
+            toast('Erro ao atualizar status: ' + traduzirErro(error.message), 'error')
         }
     }
 
@@ -176,8 +177,9 @@ export const Encomendas = ({ session, userProfile }) => {
 
             {/* Content List */}
             {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <Loader2 className="animate-spin text-primary" size={32} />
+                <div className="flex flex-col items-center justify-center py-20 text-slate-300">
+                    <Loader2 className="animate-spin text-primary mb-4" size={32} />
+                    <p className="text-sm font-medium">Carregando encomendas...</p>
                 </div>
             ) : filteredEncomendas.length === 0 ? (
                 <div className="bg-surface/30 border border-card-border border-dashed p-12 rounded-2xl flex flex-col items-center justify-center text-center">

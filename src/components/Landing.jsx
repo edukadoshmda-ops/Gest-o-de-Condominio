@@ -37,7 +37,7 @@ const TrialCta = ({ onClick, compact = false }) => (
         className={`inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 text-slate-900 font-black shadow-xl shadow-amber-400/25 hover:scale-[1.02] transition ${compact ? 'px-6 py-3 text-sm' : 'px-8 py-4 text-sm md:text-base'}`}
     >
         <Sparkles size={18} />
-        Teste Gratis por 30 Dias
+        Teste Grátis por 30 Dias
     </button>
 )
 
@@ -106,10 +106,10 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
 
             const result = Array.isArray(data) ? data[0] : data
             if (!result?.nome_condominio) {
-                throw new Error('Nao foi possivel iniciar o teste gratis.')
+                throw new Error('Não foi possível iniciar o teste grátis.')
             }
 
-            toast('Teste gratis ativado com sucesso! Agora finalize o cadastro do sindico.', 'success')
+            toast('Teste grátis ativado com sucesso! Agora finalize o cadastro do síndico.', 'success')
             setShowTrialModal(false)
             setTrialForm({ nomeSindico: '', telefone: '', email: '', nomeCondominio: '' })
             onStartTrial?.({
@@ -120,7 +120,7 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
                 trialEndsAt: formatDate(result.trial_ends_at)
             })
         } catch (error) {
-            toast(error.message || 'Erro ao iniciar teste gratis.', 'error')
+            toast(error.message || 'Erro ao iniciar teste grátis.', 'error')
         } finally {
             setTrialLoading(false)
         }
@@ -163,6 +163,78 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
         { title: 'Tema visual', desc: 'Use o seletor de temas para personalizar as cores da interface.' },
         { title: 'Menu recolhido', desc: 'Clique na seta ao lado do menu para recolher ou expandir a barra lateral.' },
         { title: 'Esqueci a senha', desc: 'Na tela de login, use a opção de redefinição de senha.' },
+    ]
+
+    const hotmartLink = 'https://pay.hotmart.com/K104799418K?bid=1772928858405'
+    const bankPaymentInfo = 'Conta corrente 52111484-5 | Ag. 0001 | Banco 077 Banco Inter | CNPJ 65.157.665/0001-59'
+    const plans = [
+        {
+            badge: 'Plano 1',
+            name: 'GESTOR360 START',
+            price: 'R$199',
+            residents: 'Até 100 moradores',
+            description: 'Ideal para condomínios menores que querem profissionalizar a gestão com custo reduzido.',
+            ctaLabel: 'Pagar no Cartão',
+            href: hotmartLink,
+            theme: 'light',
+            highlight: false,
+            showCardInfo: false,
+            showBankInfo: true,
+            features: [
+                'Até 100 moradores cadastrados',
+                'Mural e Chat completo',
+                'Controle de Encomendas',
+                'Reservas de Áreas Comuns',
+                'Financeiro e avisos',
+                'Suporte para implantação'
+            ]
+        },
+        {
+            badge: 'Melhor Escolha',
+            name: 'GESTOR360 PRO ÚNICO',
+            price: 'R$399',
+            residents: 'Plano completo para todos os portes',
+            description: 'Toda a potência do Gestor360 liberada. Uma única conta, todas as vantagens.',
+            ctaLabel: 'Assinar Agora',
+            href: hotmartLink,
+            theme: 'dark',
+            highlight: true,
+            showCardInfo: false,
+            showBankInfo: false,
+            features: [
+                'Ideal para pequenos, médios e grandes condomínios',
+                'Mural e Chat completo',
+                'Controle de Encomendas Automático',
+                'Gestão profissional de excelência',
+                'Todos os recursos do Pro incluídos',
+                'Reservas de Áreas Comuns',
+                'Gestão Financeira Completa',
+                'Usuários ilimitados ativos',
+                'Suporte Prioritário 24/7',
+                'Onboarding e Treinamento'
+            ]
+        },
+        {
+            badge: 'Plano 3',
+            name: 'GESTOR360 PLUS',
+            price: 'R$299',
+            residents: 'Até 200 moradores',
+            description: 'Para condomínios em crescimento que precisam de mais capacidade sem abrir mão da simplicidade.',
+            ctaLabel: 'Pagar pela Hotmart',
+            href: hotmartLink,
+            theme: 'light',
+            highlight: false,
+            showCardInfo: false,
+            showBankInfo: true,
+            features: [
+                'Até 200 moradores cadastrados',
+                'Mural e Chat completo',
+                'Controle de Encomendas Automático',
+                'Reservas de Áreas Comuns',
+                'Gestão Financeira Completa',
+                'Suporte Prioritário'
+            ]
+        }
     ]
 
     return (
@@ -321,62 +393,94 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
                 <div className="max-w-6xl mx-auto relative">
                     <div className="text-center mb-16 px-4">
                         <span className="text-sky-600 font-bold text-xs uppercase tracking-[0.3em] mb-3 block">Valor Justo e Transparente</span>
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">Plano Profissional Completo</h2>
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">Planos Profissionais</h2>
                         <p className="text-slate-600 max-w-2xl mx-auto text-lg md:text-xl font-medium">
-                            A tecnologia definitiva para o seu condomínio. <span className="text-sky-600 font-bold">Todas as vantagens incluídas</span> em um único valor previsível.
+                            Escolha o plano ideal para o tamanho do seu condomínio, com cobrança mensal e opções de pagamento simples.
                         </p>
                     </div>
 
-                    <div className="max-w-4xl mx-auto px-4">
-                        <div className="group bg-slate-900 rounded-[40px] p-8 md:p-14 border border-slate-800 shadow-2xl shadow-sky-900/40 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 bg-sky-600 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-bl-3xl">Melhor Escolha</div>
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="grid lg:grid-cols-3 gap-6 items-stretch">
+                            {plans.map((plan) => {
+                                const isDark = plan.theme === 'dark'
 
-                            <div className="flex flex-col lg:flex-row gap-12">
-                                <div className="flex-1 text-left">
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <div className="w-4 h-4 rounded-full bg-sky-400 animate-pulse"></div>
-                                        <span className="text-white font-black text-2xl uppercase tracking-tighter">Gestor360 PRO ÚNICO</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-1 mb-8 text-white">
-                                        <span className="text-7xl font-black leading-none tracking-tighter">R$399</span>
-                                        <span className="text-sky-400 font-bold text-2xl">/mês</span>
-                                    </div>
-                                    <p className="text-slate-400 text-lg mb-8 leading-relaxed font-medium">
-                                        Toda a potência do Gestor360 liberada. <span className="text-white font-bold block mt-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-center md:text-left">Uma única conta, todas as vantagens.</span>
-                                    </p>
-                                    <a
-                                        href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full inline-flex items-center justify-center py-6 rounded-2xl bg-sky-600 text-white font-black text-xs uppercase tracking-[0.4em] shadow-xl shadow-sky-600/40 hover:scale-[1.03] hover:bg-sky-500 transition-all"
+                                return (
+                                    <div
+                                        key={plan.name}
+                                        className={`group rounded-[36px] p-8 md:p-10 border shadow-2xl relative overflow-hidden flex flex-col ${isDark
+                                            ? 'bg-slate-900 border-slate-800 shadow-sky-900/40'
+                                            : 'bg-white border-slate-200 shadow-slate-200/70'
+                                            }`}
                                     >
-                                        Assinar Agora <ChevronRight size={18} className="ml-2" />
-                                    </a>
-                                </div>
+                                        <div className={`absolute top-0 right-0 px-4 py-3 text-[10px] font-black uppercase tracking-[0.3em] rounded-bl-3xl ${plan.highlight
+                                            ? 'bg-sky-600 text-white'
+                                            : isDark
+                                                ? 'bg-white/10 text-white'
+                                                : 'bg-sky-50 text-sky-700 border-l border-b border-sky-100'
+                                            }`}>
+                                            {plan.badge}
+                                        </div>
 
-                                <div className="flex-1 bg-white/[0.04] rounded-[48px] p-8 md:p-12 border border-white/10 relative">
-                                    <h4 className="text-sky-400 font-black text-[10px] uppercase tracking-[0.3em] mb-8 pr-4">O que está incluído no Plano:</h4>
-                                    <ul className="grid grid-cols-1 gap-5">
-                                        {[
-                                            'Ideal para pequenos, médios e grandes condomínios',
-                                            'Mural e Chat completo',
-                                            'Controle de Encomendas Automático',
-                                            'Gestão profissional de excelência',
-                                            'Todos os recursos do Pro incluídos',
-                                            'Reservas de Áreas Comuns',
-                                            'Gestão Financeira Completa',
-                                            'Usuários ilimitados ativos',
-                                            'Suporte Prioritário 24/7',
-                                            'Onboarding e Treinamento'
-                                        ].map((item, idx) => (
-                                            <li key={idx} className="flex items-start gap-4 text-slate-300 text-sm font-semibold leading-snug hover:text-white transition-colors cursor-default">
-                                                <CheckCircle2 size={20} className="text-sky-400 shrink-0 mt-0.5" />
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
+                                        <div className="flex items-center gap-2 mb-6">
+                                            <div className={`w-4 h-4 rounded-full ${isDark ? 'bg-sky-400 animate-pulse' : 'bg-sky-600'}`}></div>
+                                            <span className={`font-black text-xl uppercase tracking-tighter ${isDark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</span>
+                                        </div>
+
+                                        <p className={`text-sm font-bold mb-3 ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>{plan.residents}</p>
+
+                                        <div className={`flex items-baseline gap-1 mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                            <span className="text-6xl font-black leading-none tracking-tighter">{plan.price}</span>
+                                            <span className="text-sky-500 font-bold text-xl">/mês</span>
+                                        </div>
+
+                                        <p className={`text-base mb-6 leading-relaxed font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                                            {plan.description}
+                                        </p>
+
+                                        <div className={`rounded-3xl p-6 border mb-6 ${isDark ? 'bg-white/[0.04] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+                                            <h4 className={`font-black text-[10px] uppercase tracking-[0.3em] mb-5 ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>O que está incluído:</h4>
+                                            <ul className="grid grid-cols-1 gap-4">
+                                                {plan.features.map((item, idx) => (
+                                                    <li key={idx} className={`flex items-start gap-3 text-sm font-semibold leading-snug ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                                        <CheckCircle2 size={18} className="text-sky-500 shrink-0 mt-0.5" />
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {plan.showCardInfo && (
+                                            <div className={`rounded-2xl p-4 border mb-4 ${isDark ? 'bg-white/[0.04] border-white/10' : 'bg-amber-50 border-amber-200'}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-[0.25em] mb-2 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Pagamento no cartão</p>
+                                                <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                                    Mensal, com vencimento em 30 dias após o cadastro do condomínio.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {plan.showBankInfo && (
+                                            <div className={`rounded-2xl p-4 border mb-6 ${isDark ? 'bg-white/[0.04] border-white/10' : 'bg-sky-50 border-sky-200'}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-[0.25em] mb-2 ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>Pagamento em conta corrente</p>
+                                                <p className={`text-sm leading-relaxed break-words ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                                    {bankPaymentInfo}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <a
+                                            href={plan.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`mt-auto w-full inline-flex items-center justify-center py-5 rounded-2xl font-black text-xs uppercase tracking-[0.35em] transition-all ${isDark
+                                                ? 'bg-sky-600 text-white shadow-xl shadow-sky-600/40 hover:scale-[1.03] hover:bg-sky-500'
+                                                : 'bg-slate-900 text-white shadow-xl shadow-slate-300/60 hover:scale-[1.03] hover:bg-slate-800'
+                                                }`}
+                                        >
+                                            {plan.ctaLabel} <ChevronRight size={18} className="ml-2" />
+                                        </a>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
 
@@ -456,7 +560,7 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
                             onClick={onEnter}
                             className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl border-2 border-white text-white font-black text-base hover:bg-white/10 transition"
                         >
-                            Acessar Log-in <LogIn size={20} />
+                            Acessar Login <LogIn size={20} />
                         </button>
                         <a
                             href="https://pay.hotmart.com/K104799418K?bid=1772928858405"
@@ -479,7 +583,7 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
             </footer>
 
             {/* Instalador PWA flutuante - canto inferior direito */}
-            {!isInstalled && (
+            {!isInstalled && !showTrialModal && (
                 <div className="fixed bottom-4 right-4 z-50 w-56 rounded-2xl bg-white shadow-xl border border-sky-200 p-4">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="size-12 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 overflow-hidden">
@@ -501,71 +605,71 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
             )}
 
             {showTrialModal && (
-                <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="w-full max-w-xl rounded-[32px] bg-white border border-slate-200 shadow-2xl p-6 md:p-8 relative">
+                <div className="fixed inset-0 z-[200] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4">
+                    <div className="w-full max-w-[29rem] rounded-[28px] bg-white border border-slate-200 shadow-2xl p-5 md:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
                         <button
                             type="button"
                             onClick={() => setShowTrialModal(false)}
-                            className="absolute top-5 right-5 size-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition"
+                            className="absolute top-4 right-4 size-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition"
                         >
-                            <X size={18} />
+                            <X size={16} />
                         </button>
 
-                        <div className="mb-8">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 border border-amber-200 text-amber-700 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
-                                <Sparkles size={14} />
-                                Teste Gratis por 30 Dias
+                        <div className="mb-6">
+                            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-200 text-amber-700 text-[9px] font-black uppercase tracking-[0.18em] mb-3">
+                                <Sparkles size={12} />
+                                Teste Grátis por 30 Dias
                             </div>
-                            <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">
-                                Cadastre seu condominio e comece agora
+                            <h3 className="text-xl md:text-[1.7rem] font-black text-slate-900 tracking-tight mb-2">
+                                Cadastre seu condomínio e comece agora
                             </h3>
-                            <p className="text-slate-600 text-sm leading-relaxed">
-                                Preencha os dados do sindico responsavel. O lead sera salvo e o periodo de teste comeca imediatamente apos este cadastro.
+                            <p className="text-slate-600 text-[13px] leading-relaxed">
+                                Preencha os dados do síndico responsável. O lead será salvo e o período de teste começa imediatamente após este cadastro.
                             </p>
                         </div>
 
-                        <form onSubmit={handleStartTrialLead} className="space-y-4">
+                        <form onSubmit={handleStartTrialLead} className="space-y-3">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Sindico</label>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Síndico</label>
                                 <div className="relative">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-0" size={16} />
                                     <input
                                         type="text"
                                         required
                                         value={trialForm.nomeSindico}
                                         onChange={(e) => updateTrialForm('nomeSindico', e.target.value)}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                        className="relative z-10 w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10.5 pr-4 py-3 text-[13px] text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
                                         placeholder="Ex: Maria Oliveira"
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-3">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Telefone</label>
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Telefone</label>
                                     <div className="relative">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-0" size={16} />
                                         <input
                                             type="tel"
                                             required
                                             value={trialForm.telefone}
                                             onChange={(e) => updateTrialForm('telefone', e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                            className="relative z-10 w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10.5 pr-4 py-3 text-[13px] text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
                                             placeholder="(91) 99999-9999"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">E-mail</label>
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">E-mail</label>
                                     <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-0" size={16} />
                                         <input
                                             type="email"
                                             required
                                             value={trialForm.email}
                                             onChange={(e) => updateTrialForm('email', e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                            className="relative z-10 w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10.5 pr-4 py-3 text-[13px] text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
                                             placeholder="sindico@condominio.com"
                                         />
                                     </div>
@@ -573,34 +677,34 @@ export const Landing = ({ onEnter, onStartTrial, onWatchTrailer }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Condominio</label>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome do Condomínio</label>
                                 <div className="relative">
-                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-0" size={16} />
                                     <input
                                         type="text"
                                         required
                                         value={trialForm.nomeCondominio}
                                         onChange={(e) => updateTrialForm('nomeCondominio', e.target.value)}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-sm text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                                        className="relative z-10 w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10.5 pr-4 py-3 text-[13px] text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
                                         placeholder="Ex: Residencial Solar das Palmeiras"
                                     />
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl bg-sky-50 border border-sky-100 p-4">
-                                <p className="text-sky-700 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Importante</p>
-                                <p className="text-slate-600 text-sm">
-                                    Apos enviar, o lead sera salvo, o condominio sera criado com validade inicial de 30 dias e voce sera levado para concluir o cadastro do login do sindico.
+                            <div className="rounded-2xl bg-sky-50 border border-sky-100 p-3.5">
+                                <p className="text-sky-700 text-[9px] font-black uppercase tracking-[0.18em] mb-1">Importante</p>
+                                <p className="text-slate-600 text-[13px] leading-relaxed">
+                                    Após enviar, o lead será salvo, o condomínio será criado com validade inicial de 30 dias e você será levado para concluir o cadastro do login do síndico.
                                 </p>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={trialLoading}
-                                className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-amber-400 text-slate-900 font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-amber-400/25 hover:scale-[1.01] transition disabled:opacity-60"
+                                className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-amber-400 text-slate-900 font-black text-[13px] uppercase tracking-[0.18em] shadow-xl shadow-amber-400/25 hover:scale-[1.01] transition disabled:opacity-60"
                             >
-                                {trialLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                                Iniciar Teste Gratis
+                                {trialLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                                Iniciar Teste Grátis
                             </button>
                         </form>
                     </div>

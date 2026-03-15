@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { traduzirErro } from '../lib/erros'
 import { PostCard } from './Mural'
 import { useToast } from '../lib/toast'
 import {
@@ -23,26 +24,23 @@ import {
     Wrench,
     Bell,
     Box,
-    Users,
     BarChart3
 } from 'lucide-react'
 
 const rapidActions = [
     { id: 'mural', label: 'Mural', icon: MessageSquare, hideFor: 'porteiro' },
-    { id: 'visitantes', label: 'Visitantes', icon: Users },
-    { id: 'encomendas', label: 'Encomendas', icon: Package },
     { id: 'financeiro', label: 'Financeiro', icon: CreditCard, hideFor: 'porteiro' },
     { id: 'reservas', label: 'Reservas', icon: Calendar, hideFor: 'porteiro' },
     { id: 'chamados', label: 'Chamados', icon: Wrench, hideFor: 'porteiro' },
-    { id: 'relatorios', label: 'Relatórios', icon: BarChart3, onlyFor: ['sindico', 'admin_master'] },
-    { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master'] },
+    { id: 'relatorios', label: 'Relatórios', icon: BarChart3, onlyFor: ['sindico', 'admin_master', 'superadmin'] },
+    { id: 'patrimonio', label: 'Patrimônio', icon: Box, onlyFor: ['sindico', 'admin_master', 'superadmin'] },
     { id: 'notificacoes', label: 'Notificações', icon: Bell },
     { id: 'documentos', label: 'Atas e Regulamentos', icon: FileText }
 ]
 
-const ActionButton = ({ icon: Icon, label, color = 'text-slate-600', bg = 'bg-surface', border = 'border-card-border', onClick }) => (
+const ActionButton = ({ icon: Icon, label, color = 'text-slate-600', bg = 'bg-surface', border = 'border-card-border', onClick, preserveColors = false }) => (
     <div className="flex flex-col items-center gap-2 shrink-0 group cursor-pointer" onClick={onClick}>
-        <div className={`theme-icon-box size-16 rounded-2xl border ${border} ${bg} flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(236,91,19,0.15)] transition-all duration-300`}>
+        <div className={`theme-icon-box size-16 rounded-2xl border ${border} ${bg} flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(236,91,19,0.15)] transition-all duration-300 ${preserveColors ? 'action-btn-preserve-colors' : ''}`}>
             <Icon className={`${color} group-hover:scale-110 transition-transform`} size={24} />
         </div>
         <span className="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-wider group-hover:text-slate-700 transition-colors">{label}</span>
@@ -68,14 +66,14 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
     const [tempTrashSchedule, setTempTrashSchedule] = useState('')
     const [showNovoAvisoModal, setShowNovoAvisoModal] = useState(false)
     const [showNovaEnqueteModal, setShowNovaEnqueteModal] = useState(false)
-    const [novoAviso, setNovoAviso] = useState({ titulo: '', descricao: '', tag: 'OFICIAL' })
+    const [novoAviso, setNovoAviso] = useState({ titulo: '', descricao: '', tag: 'OFICIAL', condominio_id: null })
+    const [listaCondominios, setListaCondominios] = useState([])
     const [novaEnquete, setNovaEnquete] = useState({ titulo: '', opcoes: ['', '', ''] })
     const [savingAviso, setSavingAviso] = useState(false)
     const [savingEnquete, setSavingEnquete] = useState(false)
     const [indicadoresSindico, setIndicadoresSindico] = useState({ reservas: 0, encomendasPendentes: 0, faturasVencidas: 0, avisos: 0 })
 
-    const isSindico = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master'
-
+    const isSindico = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin'
     const filteredRapidActions = rapidActions.filter(a => {
         if (a.hideFor === userProfile?.tipo) return false
         if (a.onlyFor && !a.onlyFor.includes(userProfile?.tipo)) return false
@@ -101,6 +99,12 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                 .then(({ data }) => { if (data) setHasVoted(true) })
         }
     }, [enquete?.id, session?.user?.id])
+
+    useEffect(() => {
+        if (showNovoAvisoModal && (userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && !userProfile?.condominio_id && listaCondominios.length === 0) {
+            supabase.from('condominios').select('id, nome').order('nome').then(({ data }) => setListaCondominios(data || []))
+        }
+    }, [showNovoAvisoModal, userProfile?.tipo, userProfile?.condominio_id])
 
     const handleSaveTrash = () => {
         localStorage.setItem('trash_schedule', tempTrashSchedule)
@@ -278,15 +282,36 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
         setShowNoticeModal(true)
     }
 
+    const handleDeleteAviso = async (avisoId) => {
+        if (!avisoId || !confirm('Excluir este aviso?')) return
+        try {
+            const { error } = await supabase.from('avisos').delete().eq('id', avisoId)
+            if (error) throw error
+            toast('Aviso excluído.', 'success')
+            setShowNoticeModal(false)
+            setSelectedNotice(null)
+            fetchAviso()
+        } catch (e) {
+            console.error(e)
+            toast(traduzirErro(e?.message) || 'Erro ao excluir aviso.', 'error')
+        }
+    }
+
+    const condoIdAviso = userProfile?.condominio_id || novoAviso.condominio_id
+
     const handleCriarAviso = async () => {
-        if (!novoAviso.titulo.trim() || !novoAviso.descricao.trim() || !userProfile?.condominio_id) {
+        if (!novoAviso.titulo.trim() || !novoAviso.descricao.trim()) {
             toast('Preencha título e descrição.', 'error')
+            return
+        }
+        if (!condoIdAviso) {
+            toast('Selecione ou vincule-se a um condomínio para publicar.', 'error')
             return
         }
         setSavingAviso(true)
         try {
             const { error } = await supabase.from('avisos').insert({
-                condominio_id: userProfile.condominio_id,
+                condominio_id: condoIdAviso,
                 titulo: novoAviso.titulo.trim(),
                 descricao: novoAviso.descricao.trim(),
                 tag: novoAviso.tag || 'OFICIAL',
@@ -294,13 +319,27 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
             if (error) throw error
             toast('Aviso publicado!', 'success')
             setShowNovoAvisoModal(false)
-            setNovoAviso({ titulo: '', descricao: '', tag: 'OFICIAL' })
+            setNovoAviso({ titulo: '', descricao: '', tag: 'OFICIAL', condominio_id: null })
             fetchAviso()
         } catch (e) {
             console.error(e)
-            toast(e?.message || 'Erro ao publicar aviso.', 'error')
+            toast(traduzirErro(e?.message) || 'Erro ao publicar aviso.', 'error')
         } finally {
             setSavingAviso(false)
+        }
+    }
+
+    const handleDeleteEnquete = async (enqueteId) => {
+        if (!enqueteId || !confirm('Excluir esta enquete? Os votos serão perdidos.')) return
+        try {
+            const { error } = await supabase.from('enquetes').delete().eq('id', enqueteId)
+            if (error) throw error
+            toast('Enquete excluída.', 'success')
+            setSelectedOption(null)
+            fetchEnquete()
+        } catch (e) {
+            console.error(e)
+            toast(traduzirErro(e?.message) || 'Erro ao excluir enquete.', 'error')
         }
     }
 
@@ -330,7 +369,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
             fetchEnquete()
         } catch (e) {
             console.error(e)
-            toast(e?.message || 'Erro ao criar enquete.', 'error')
+            toast(traduzirErro(e?.message) || 'Erro ao criar enquete.', 'error')
         } finally {
             setSavingEnquete(false)
         }
@@ -419,12 +458,12 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
             {/* Quick Actions */}
             <section className="overflow-x-auto no-scrollbar flex gap-5 pb-2 -mx-2 px-2">
                 <ActionButton icon={Plus} label="Novo" border="border-dashed border-slate-600" onClick={() => setActiveTab('mural')} title="Nova Ação" />
-                <ActionButton icon={Package} label="Pacotes" color="text-amber-400" bg="bg-amber-400/10" onClick={() => setActiveTab('encomendas')} />
-                <ActionButton icon={Droplets} label="Água" color="text-blue-400" bg="bg-blue-400/10" onClick={() => setShowAguaModal(true)} />
-                <ActionButton icon={PartyPopper} label="Salão" color="text-purple-400" bg="bg-purple-400/10" onClick={() => setActiveTab('reservas')} />
-                <ActionButton icon={Trash2} label="Lixo" color="text-green-400" bg="bg-green-400/10" onClick={() => { setTempTrashSchedule(trashSchedule); setShowTrashModal(true); }} />
-                <ActionButton icon={Dumbbell} label="Academia" color="text-primary" bg="bg-primary/10" onClick={() => setActiveTab('reservas')} />
-                <ActionButton icon={Mail} label="Avisos" color="text-yellow-400" bg="bg-yellow-400/10" onClick={() => setActiveTab('mural')} />
+                <ActionButton icon={Package} label="Pacotes" color="text-amber-400" bg="bg-amber-400/10" preserveColors onClick={() => setActiveTab('encomendas')} />
+                <ActionButton icon={Droplets} label="Água" color="text-blue-400" bg="bg-blue-400/10" preserveColors onClick={() => setShowAguaModal(true)} />
+                <ActionButton icon={PartyPopper} label="Salão" color="text-purple-400" bg="bg-purple-400/10" preserveColors onClick={() => setActiveTab('reservas')} />
+                <ActionButton icon={Trash2} label="Lixo" color="text-green-400" bg="bg-green-400/10" preserveColors onClick={() => { setTempTrashSchedule(trashSchedule); setShowTrashModal(true); }} />
+                <ActionButton icon={Dumbbell} label="Academia" color="text-primary" bg="bg-primary/10" preserveColors onClick={() => setActiveTab('reservas')} />
+                <ActionButton icon={Mail} label="Avisos" color="text-yellow-400" bg="bg-yellow-400/10" preserveColors onClick={() => setActiveTab('mural')} />
             </section>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -436,7 +475,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                             <div className="w-full sm:w-48 bg-slate-100/50 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-card-border py-8 sm:py-0 relative overflow-hidden">
                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative">
-                                    <Droplets className="text-primary/80 group-hover:scale-110 transition-transform duration-500" size={56} />
+                                    <Bell className="text-primary/80 group-hover:scale-110 transition-transform duration-500" size={56} />
                                 </div>
                             </div>
                             <div className="p-6 md:p-8 flex flex-col justify-between flex-1">
@@ -450,6 +489,15 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                                 <div className="flex items-center justify-between mt-4 border-t border-card-border/50 pt-4">
                                     <span className="text-slate-500 text-xs font-medium italic">{aviso ? formatTimeAgo(avisoDisplay.created_at) : '—'}</span>
                                     <div className="flex items-center gap-2">
+                                        {isSindico && aviso?.id && (
+                                            <button
+                                                onClick={() => handleDeleteAviso(aviso.id)}
+                                                className="p-1.5 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                                title="Excluir aviso"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
                                         {isSindico && aviso && (
                                             <button onClick={() => { setShowNovoAvisoModal(true) }} className="text-slate-500 text-xs font-bold hover:text-primary">NOVO AVISO</button>
                                         )}
@@ -512,7 +560,7 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                                         images={post.imagens}
                                         onLike={handleLikePost}
                                         onDelete={handleDeletePost}
-                                        canDelete={userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'sindico' || post.autor === (userProfile?.nome || session?.user?.email)}
+                                        canDelete={userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin' || userProfile?.tipo === 'sindico' || post.autor === (userProfile?.nome || session?.user?.email)}
                                         onComment={() => toast('Comentários serão exibidos aqui em breve.', 'info')}
                                         onShare={() => toast('Link copiado para a área de transferência!', 'success')}
                                     />
@@ -528,12 +576,23 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12 blur-3xl"></div>
                         <div className="flex items-center justify-between mb-6 relative">
                             <h3 className="text-slate-900 font-bold text-sm tracking-widest uppercase">Enquete Ativa</h3>
-                            {enquete && <span className="theme-primary-contrast bg-primary text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-primary/20">NOVO</span>}
-                            {isSindico && (
-                                <button onClick={() => setShowNovaEnqueteModal(true)} className="text-primary text-[10px] font-black uppercase tracking-wider hover:underline">
-                                    {enquete ? 'NOVA ENQUETE' : 'CRIAR ENQUETE'}
-                                </button>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {enquete && <span className="theme-primary-contrast bg-primary text-white text-[9px] font-black px-2 py-1 rounded-lg shadow-lg shadow-primary/20">NOVO</span>}
+                                {isSindico && enquete?.id && (
+                                    <button
+                                        onClick={() => handleDeleteEnquete(enquete.id)}
+                                        className="p-1.5 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                        title="Excluir enquete"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
+                                {isSindico && (
+                                    <button onClick={() => setShowNovaEnqueteModal(true)} className="text-primary text-[10px] font-black uppercase tracking-wider hover:underline">
+                                        {enquete ? 'NOVA ENQUETE' : 'CRIAR ENQUETE'}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         {enqueteDisplay ? (
                             <>
@@ -630,9 +689,20 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
             {showNoticeModal && selectedNotice && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
                     <div className="bg-surface w-full max-w-2xl rounded-[40px] border border-card-border p-8 md:p-12 animate-in zoom-in-95 duration-300 relative shadow-2xl overflow-y-auto max-h-[90vh]">
-                        <button onClick={() => setShowNoticeModal(false)} className="size-10 absolute right-6 top-6 rounded-full border border-card-border flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-white transition-all">
-                            <X size={20} />
-                        </button>
+                        <div className="absolute right-6 top-6 flex items-center gap-2">
+                            {isSindico && selectedNotice?.id && (
+                                <button
+                                    onClick={() => handleDeleteAviso(selectedNotice.id)}
+                                    className="size-10 rounded-full border border-card-border flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                                    title="Excluir aviso"
+                                >
+                                    <Trash2 size={20} />
+                                </button>
+                            )}
+                            <button onClick={() => setShowNoticeModal(false)} className="size-10 rounded-full border border-card-border flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-white transition-all">
+                                <X size={20} />
+                            </button>
+                        </div>
                         <div className="flex items-center gap-3 mb-6">
                             <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full border border-primary/20 uppercase tracking-widest">{selectedNotice.tag || 'OFICIAL'}</span>
                             <span className="text-slate-500 text-xs font-bold">{selectedNotice.created_at ? formatTimeAgo(selectedNotice.created_at) : '—'}</span>
@@ -658,6 +728,21 @@ export const Dashboard = ({ session, userProfile, setActiveTab }) => {
                         <button onClick={() => setShowNovoAvisoModal(false)} className="size-10 absolute right-6 top-6 rounded-full border border-card-border flex items-center justify-center text-slate-500 hover:text-slate-900"><X size={20} /></button>
                         <h2 className="text-slate-900 text-xl font-black mb-6">Novo Aviso do Síndico</h2>
                         <div className="space-y-4">
+                            {(userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && !userProfile?.condominio_id && (
+                                <div>
+                                    <label className="block text-slate-600 text-xs font-bold uppercase mb-1">Condomínio</label>
+                                    <select
+                                        value={novoAviso.condominio_id || ''}
+                                        onChange={e => setNovoAviso(a => ({ ...a, condominio_id: e.target.value || null }))}
+                                        className="w-full bg-background border border-card-border rounded-xl px-4 py-3 text-slate-900 font-medium"
+                                    >
+                                        <option value="">Selecione o condomínio</option>
+                                        {listaCondominios.map(c => (
+                                            <option key={c.id} value={c.id}>{c.nome}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-slate-600 text-xs font-bold uppercase mb-1">Título</label>
                                 <input

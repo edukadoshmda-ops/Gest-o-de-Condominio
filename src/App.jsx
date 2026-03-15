@@ -109,19 +109,21 @@ const App = () => {
 
                 // Se for o Admin Master (edukadoshmda@gmail.com), ele deve poder entrar para criar o primeiro condo
                 const envEmail = (import.meta.env.VITE_SUPERADMIN_EMAIL || '').trim().toLowerCase()
-                const superAdminEmail = envEmail || 'edukadoshmda@gmail.com'
-                const isSuperAdmin = superAdminEmail && userEmail?.toLowerCase() === superAdminEmail
+                const adminEmailCheck = envEmail || 'edukadoshmda@gmail.com'
+                const isSuperAdmin = adminEmailCheck && userEmail?.toLowerCase() === adminEmailCheck
 
                 if (isSuperAdmin) {
-                    // Busca o primeiro condomínio disponível se existir
-                    let { data: condos } = await supabase.from('condominios').select('id, nome, status').limit(1).maybeSingle()
-                    setUserProfile({
+                    // Busca o primeiro condomínio disponível se existir para permitir testes
+                    let { data: firstCondo } = await supabase.from('condominios').select('id, nome').limit(1).maybeSingle()
+                    
+                    const profileData = {
                         id: userId,
-                        tipo: 'admin_master',
+                        tipo: 'superadmin',
                         nome: 'Super Admin',
-                        condominio_id: condos?.id || null,
-                        condominios: condos || null
-                    })
+                        condominio_id: firstCondo?.id || null
+                    }
+                    
+                    setUserProfile(profileData)
                     setLoadingAuth(false)
                     return
                 }
@@ -130,7 +132,7 @@ const App = () => {
             }
 
             // 1. Verificar se o condomínio está ativo (admin_master e síndico podem entrar para reativar)
-            const podeGerenciarCondo = data.tipo === 'admin_master' || data.tipo === 'sindico'
+            const podeGerenciarCondo = data.tipo === 'admin_master' || data.tipo === 'sindico' || data.tipo === 'superadmin'
             if (data.condominios && data.condominios.status !== 'ativo' && !podeGerenciarCondo) {
                 alert("Este condomínio está suspenso. Entre em contato com o administrador.")
                 await supabase.auth.signOut()
@@ -139,7 +141,7 @@ const App = () => {
             }
 
             // 2. Verificar se a assinatura expirou (apenas para não-admins)
-            if (data.condominios?.data_vencimento && data.tipo !== 'admin_master') {
+            if (data.condominios?.data_vencimento && data.tipo !== 'admin_master' && data.tipo !== 'superadmin') {
                 const hoje = new Date().toISOString().split('T')[0]
                 if (data.condominios.data_vencimento < hoje) {
                     alert("A assinatura do condomínio expirou. O acesso foi bloqueado.")
@@ -156,7 +158,7 @@ const App = () => {
 
             const finalProfile = { ...data }
             if (isSuperAdmin) {
-                finalProfile.tipo = 'admin_master'
+                finalProfile.tipo = 'superadmin'
             } else if (userEmail.includes('sindico') && finalProfile.tipo === 'morador') {
                 finalProfile.tipo = 'sindico'
             }
@@ -172,7 +174,7 @@ const App = () => {
                 const { data: primeiroCondo } = await supabase.from('condominios').select('id, nome, status').limit(1).maybeSingle()
                 setUserProfile({
                     id: userId,
-                    tipo: 'admin_master',
+                    tipo: 'superadmin',
                     nome: 'Super Admin',
                     condominio_id: primeiroCondo?.id,
                     condominios: primeiroCondo || null

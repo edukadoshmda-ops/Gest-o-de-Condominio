@@ -139,9 +139,7 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                                 <span
                                                     className={`text-xs font-bold ${currentTheme === t.id
                                                         ? 'text-primary'
-                                                        : ['darkBlue', 'black'].includes(currentTheme)
-                                                            ? 'text-slate-600 group-hover:text-primary'
-                                                            : 'text-slate-600 group-hover:text-slate-900'
+                                                        : 'text-slate-700 group-hover:text-primary'
                                                         }`}
                                                 >
                                                     {t.name}
@@ -188,7 +186,7 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                     </div>
                                     <button
                                         onClick={() => setShowNotifications(false)}
-                                        className="text-slate-500 hover:text-slate-900 transition-colors"
+                                        className="text-slate-600 hover:text-slate-900 transition-colors"
                                     >
                                         <X size={16} />
                                     </button>
@@ -198,8 +196,8 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                         <div className="p-8 text-center"><div className="animate-spin size-8 border-2 border-primary border-t-transparent rounded-full mx-auto" /></div>
                                     ) : notifications.length === 0 ? (
                                         <div className="p-8 text-center flex flex-col items-center justify-center">
-                                            <Bell size={32} className="text-slate-200 mb-3" />
-                                            <p className="text-slate-500 text-xs font-medium">Você não tem novas notificações.</p>
+                                            <Bell size={32} className="text-slate-500 mb-3" />
+                                            <p className="text-slate-600 text-xs font-medium">Você não tem novas notificações.</p>
                                         </div>
                                     ) : (
                                         notifications.map((n) => {
@@ -223,7 +221,7 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                                             {!n.lida && <button onClick={() => handleDismiss(n.id)} className="text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-slate-900">Marcar lida</button>}
                                                         </div>
                                                     </div>
-                                                    <button type="button" onClick={() => handleDismiss(n.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 shrink-0" title="Remover"><Trash2 size={16} /></button>
+                                                    <button type="button" onClick={() => handleDismiss(n.id)} className="p-1.5 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-500/10 shrink-0" title="Remover"><Trash2 size={16} /></button>
                                                 </div>
                                             )
                                         })
@@ -234,7 +232,7 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                                         setActiveTab?.('notificacoes')
                                         setShowNotifications(false)
                                     }}
-                                    className="w-full p-4 bg-white/[0.03] text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 hover:text-slate-900 hover:bg-white/[0.05] transition-all border-t border-card-border/50"
+                                    className="w-full p-4 bg-white/[0.03] text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-all border-t border-card-border/50"
                                 >
                                     Ver Todas as Notificações
                                 </button>
@@ -256,7 +254,7 @@ export const Header = ({ onOpenDrawer, session, setActiveTab, currentTheme, onTh
                             <div className="absolute right-0 mt-2 w-48 bg-surface border border-card-border rounded-2xl shadow-xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                                 <button
                                     onClick={() => { setActiveTab?.('perfil'); setShowUserMenu(false); }}
-                                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 hover:bg-white/5 text-sm font-bold"
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-bold"
                                 >
                                     <span>Meu Perfil</span>
                                 </button>

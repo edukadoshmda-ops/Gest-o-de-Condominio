@@ -102,7 +102,7 @@ export const CentroNotificacoes = ({ session, userProfile, setActiveTab }) => {
                     <button
                         key={f}
                         onClick={() => setFiltro(f)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all border ${filtro === f ? 'bg-primary text-white border-primary' : 'bg-surface border-card-border hover:border-primary/50'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all border ${filtro === f ? 'bg-primary text-white border-primary' : 'bg-surface border-card-border text-slate-600 hover:border-primary/50 hover:text-slate-900'}`}
                     >
                         {f === 'todas' ? 'Todas' : f === 'lidas' ? 'Lidas' : 'Não lidas'}
                     </button>
@@ -111,12 +111,13 @@ export const CentroNotificacoes = ({ session, userProfile, setActiveTab }) => {
 
             <div className="bg-surface rounded-3xl border border-card-border overflow-hidden shadow-xl">
                 {loading ? (
-                    <div className="flex justify-center py-16">
-                        <Loader2 className="animate-spin text-primary" size={32} />
+                    <div className="flex flex-col items-center justify-center py-16 text-slate-600">
+                        <Loader2 className="animate-spin text-primary mb-4" size={32} />
+                        <p className="text-sm font-medium">Carregando...</p>
                     </div>
                 ) : list.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-slate-500">
-                        <Bell size={48} className="mb-4 opacity-50" />
+                    <div className="flex flex-col items-center justify-center py-16 text-slate-600">
+                        <Bell size={48} className="mb-4 opacity-60" />
                         <p className="text-sm font-bold">Nenhuma notificação</p>
                     </div>
                 ) : (

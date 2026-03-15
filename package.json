@@ -10,6 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "vapid": "npx web-push generate-vapid-keys",
+    "deploy-push": "supabase functions deploy send-push --no-verify-jwt",
     "pdf-docs": "node scripts/gerar-documentacao-pdf.js"
   },
   "dependencies": {

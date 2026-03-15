@@ -99,7 +99,7 @@ export const Documentos = ({ session, userProfile }) => {
     const [arquivo, setArquivo] = useState(null)
     const [uploading, setUploading] = useState(false)
 
-    const canEdit = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master'
+    const canEdit = userProfile?.tipo === 'sindico' || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin'
 
     useEffect(() => {
         if (userProfile?.condominio_id) {
@@ -199,8 +199,9 @@ export const Documentos = ({ session, userProfile }) => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[200px]">
-                <Loader2 className="animate-spin text-primary" size={32} />
+            <div className="flex flex-col items-center justify-center min-h-[200px] text-slate-300">
+                <Loader2 className="animate-spin text-primary mb-4" size={32} />
+                <p className="text-sm font-medium">Carregando...</p>
             </div>
         )
     }

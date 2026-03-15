@@ -60,8 +60,10 @@ export const Reservas = ({ session, userProfile }) => {
     useEffect(() => {
         if (userProfile?.condominio_id) {
             fetchReservas()
+        } else {
+            setLoading(false)
         }
-    }, [userProfile, session])
+    }, [userProfile?.condominio_id])
 
     const fetchReservas = async () => {
         if (!userProfile?.condominio_id) return
@@ -214,7 +216,10 @@ export const Reservas = ({ session, userProfile }) => {
             ) : (
                 <div className="space-y-6">
                     {loading ? (
-                        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" size={32} /></div>
+                        <div className="flex flex-col items-center justify-center py-20 text-slate-300">
+                            <Loader2 className="animate-spin text-primary mb-4" size={32} />
+                            <p className="text-sm font-medium">Carregando reservas...</p>
+                        </div>
                     ) : reservas.length === 0 ? (
                         <div className="p-12 text-center text-slate-500 bg-surface border border-card-border border-dashed rounded-3xl">
                             <CalendarDays size={48} className="mx-auto mb-4 opacity-50" />

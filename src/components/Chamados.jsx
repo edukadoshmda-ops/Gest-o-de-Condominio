@@ -17,20 +17,26 @@ import {
     Trash2
 } from 'lucide-react'
 
+const statusBadgeStyles = {
+    'Aberto': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    'ABERTO': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    'Em Andamento': 'bg-primary/10 text-primary border-primary/20',
+    'Concluído': 'bg-green-500/10 text-green-500 border-green-500/20',
+}
+const priorityBadgeStyles = {
+    'Baixa': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+    'Média': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    'Alta': 'bg-red-500/10 text-red-500 border-red-500/20',
+    'Alta (Urgente)': 'bg-red-500/10 text-red-500 border-red-500/20',
+}
+const priorityLabelStyles = {
+    'Baixa': 'text-slate-400',
+    'Média': 'text-amber-500',
+    'Alta': 'text-red-500',
+    'Alta (Urgente)': 'text-red-500',
+}
+
 const ChamadoCard = ({ title, date, status, priority, category, foto_url, descricao, onViewDetails, onDelete }) => {
-    const statusStyles = {
-        'Aberto': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-        'Em Andamento': 'bg-primary/10 text-primary border-primary/20',
-        'Concluído': 'bg-green-500/10 text-green-500 border-green-500/20',
-    }
-
-    const priorityStyles = {
-        'Baixa': 'text-slate-500',
-        'Média': 'text-yellow-500',
-        'Alta': 'text-red-500',
-        'Alta (Urgente)': 'text-red-500',
-    }
-
     const safeStatus = status || 'Aberto'
     const safePriority = priority || 'Baixa'
 
@@ -62,7 +68,7 @@ const ChamadoCard = ({ title, date, status, priority, category, foto_url, descri
                                 <Trash2 size={16} />
                             </button>
                         )}
-                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-lg border whitespace-nowrap ${statusStyles[safeStatus] || statusStyles['Aberto']}`}>
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-lg border whitespace-nowrap ${statusBadgeStyles[safeStatus] || statusBadgeStyles['Aberto']}`}>
                             {safeStatus}
                         </span>
                     </div>
@@ -85,8 +91,8 @@ const ChamadoCard = ({ title, date, status, priority, category, foto_url, descri
                         <span className="text-[10px] text-slate-500 font-bold">{date}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <AlertTriangle size={12} className={priorityStyles[safePriority] || priorityStyles['Baixa']} />
-                        <span className={`text-[10px] font-bold ${priorityStyles[safePriority] || priorityStyles['Baixa']}`}>{safePriority.replace(' (Urgente)', '')}</span>
+                        <AlertTriangle size={12} className={priorityLabelStyles[safePriority] || priorityLabelStyles['Baixa']} />
+                        <span className={`text-[10px] font-bold ${priorityLabelStyles[safePriority] || priorityLabelStyles['Baixa']}`}>{safePriority.replace(' (Urgente)', '')}</span>
                     </div>
                 </div>
                 <button
@@ -123,13 +129,12 @@ export const Chamados = ({ session, userProfile }) => {
     })
 
     useEffect(() => {
-        if (userProfile?.condominio_id) {
+        if (session?.user) {
             fetchChamados()
-        } else if (session?.user && !loading) {
-            // Se tem sessão mas não tem perfil ainda, espera um pouco ou tenta carregar sem filtro (opcional)
-            fetchChamados()
+        } else {
+            setLoading(false)
         }
-    }, [userProfile, session])
+    }, [userProfile?.condominio_id, session?.user?.id])
 
     const fetchChamados = async () => {
         setLoading(true)
@@ -240,17 +245,12 @@ export const Chamados = ({ session, userProfile }) => {
 
     const formatDate = (dateStr) => {
         if (!dateStr) return ''
-        const date = new Date(dateStr)
-        const today = new Date()
-
-        const isToday = date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-
-        const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-
+        const d = new Date(dateStr)
+        const now = new Date()
+        const isToday = d.toDateString() === now.toDateString()
+        const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         if (isToday) return `Hoje, ${time}`
-        return `${date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}, ${time}`
+        return `${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}, ${time}`
     }
 
     const handleDeleteChamado = async (chamado) => {
@@ -328,11 +328,11 @@ export const Chamados = ({ session, userProfile }) => {
                                             key={f}
                                             onClick={() => setFiltroStatus(f)}
                                             className={`w-full text-left px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group
-                                                ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'hover:bg-white/5 text-slate-600 hover:text-slate-900 border border-transparent'}`}
+                                                ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'hover:bg-white/5 text-slate-300 hover:text-slate-100 border border-transparent'}`}
                                         >
                                             {f}
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded-lg transition-colors
-                                                ${isActive ? 'bg-primary/20 text-primary' : 'bg-slate-200 group-hover:bg-white/10'}`}>
+                                                ${isActive ? 'bg-primary/20 text-primary' : 'bg-white/10 text-slate-300 group-hover:bg-white/15'}`}>
                                                 {count}
                                             </span>
                                         </button>
@@ -353,13 +353,13 @@ export const Chamados = ({ session, userProfile }) => {
                 {/* Chamados Grid */}
                 <div className="lg:col-span-3">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+                        <div className="flex flex-col items-center justify-center py-20 text-slate-300">
                             <Loader2 className="animate-spin text-primary mb-4" size={40} />
                             <p className="text-sm font-medium">Carregando chamados...</p>
                         </div>
                     ) : filteredChamados.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 bg-surface border border-card-border border-dashed rounded-3xl text-slate-500">
-                            <Wrench size={48} className="text-slate-700 mb-4 opacity-50" />
+                        <div className="flex flex-col items-center justify-center py-20 bg-surface border border-card-border border-dashed rounded-3xl text-slate-300">
+                            <Wrench size={48} className="text-slate-400 mb-4 opacity-60" />
                             <p className="text-sm font-medium">Nenhum chamado encontrado.</p>
                             {searchTerm || filtroStatus !== 'Todos' ? (
                                 <button onClick={() => { setSearchTerm(''); setFiltroStatus('Todos') }} className="mt-4 text-xs font-bold text-primary hover:underline">Limpar filtros</button>
@@ -401,9 +401,9 @@ export const Chamados = ({ session, userProfile }) => {
                             <img src={selectedChamado.foto_url} alt="Chamado" className="w-full h-48 object-cover rounded-2xl border border-card-border mb-6" />
                         )}
                         <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap mb-6">{selectedChamado.descricao}</p>
-                        <div className="flex flex-wrap gap-2">
-                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${selectedChamado.status === 'Concluído' ? 'bg-green-500/10 text-green-500' : selectedChamado.status === 'Em Andamento' ? 'bg-primary/10 text-primary' : 'bg-blue-500/10 text-blue-500'}`}>{selectedChamado.status}</span>
-                            <span className="px-3 py-1 rounded-lg text-[10px] font-black text-slate-600 bg-slate-200">{selectedChamado.prioridade}</span>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase border ${statusBadgeStyles[selectedChamado.status] || statusBadgeStyles['Aberto']}`}>{selectedChamado.status || 'Aberto'}</span>
+                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black border ${priorityBadgeStyles[selectedChamado.prioridade] || priorityBadgeStyles['Baixa']}`}>{selectedChamado.prioridade || 'Baixa'}</span>
                             <span className="text-slate-500 text-xs font-bold">{formatDate(selectedChamado.created_at)}</span>
                         </div>
                     </div>

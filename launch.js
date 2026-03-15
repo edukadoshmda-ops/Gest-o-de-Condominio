@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const require = createRequire(import.meta.url)
-const open = require('open')
+const openMod = require('open')
+const open = (openMod?.default ?? openMod)
 
 // Aguarda o Vite iniciar e abre o navegador
 setTimeout(() => {

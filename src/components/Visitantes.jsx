@@ -227,8 +227,9 @@ export const Visitantes = ({ session, userProfile }) => {
                     </div>
 
                     {loading ? (
-                        <div className="flex items-center justify-center py-8">
-                            <Loader2 className="animate-spin text-primary" size={32} />
+                        <div className="flex flex-col items-center justify-center py-8 text-slate-300">
+                            <Loader2 className="animate-spin text-primary mb-4" size={32} />
+                            <p className="text-sm font-medium">Carregando...</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,9 +285,9 @@ export const Visitantes = ({ session, userProfile }) => {
                         </div>
                         <div className="divide-y divide-card-border/30 max-h-[400px] overflow-y-auto custom-scrollbar">
                             {loading && visitantes.length === 0 ? (
-                                <div className="p-6 text-center text-slate-500">Carregando...</div>
+                                <div className="p-6 text-center text-slate-300">Carregando...</div>
                             ) : visitantes.length === 0 ? (
-                                <div className="p-6 text-center text-slate-500">Nenhum registro encontrado.</div>
+                                <div className="p-6 text-center text-slate-300">Nenhum registro encontrado.</div>
                             ) : visitantes.map((visit, i) => (
                                 <div key={visit.id || i} className="p-6 flex items-center justify-between hover:bg-white/[0.01] transition-colors group">
                                     <div className="flex items-center gap-4">

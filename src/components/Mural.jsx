@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import { traduzirErro } from '../lib/erros'
 import { useToast } from '../lib/toast'
 import { useNotifications } from '../hooks/useNotifications'
 import {
@@ -208,7 +209,7 @@ export const Mural = ({ session, userProfile }) => {
     const { toast } = useToast()
     const { updateNotificarChat } = useNotifications(session, userProfile, { toast })
     const currentUser = userProfile?.nome || session?.user?.user_metadata?.nome || session?.user?.email || "Usuário"
-    const isAdmin = userProfile?.tipo === 'admin_master' || session?.user?.email?.includes('admin')
+    const isAdmin = userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin' || session?.user?.email?.includes('admin')
 
     useEffect(() => {
         if (userProfile?.notificar_chat !== undefined) {
@@ -247,6 +248,35 @@ export const Mural = ({ session, userProfile }) => {
 
     useEffect(() => {
         if (activeChat?.id && userProfile?.condominio_id) fetchMensagens(activeChat)
+    }, [activeChat?.id, activeChat?.type, userProfile?.condominio_id])
+
+    // Realtime: novas mensagens em canais (Síndico, Portaria, Comercial, Diversos)
+    useEffect(() => {
+        if (activeChat?.type !== 'channel' || !activeChat?.id || !userProfile?.condominio_id) return
+        const ch = supabase
+            .channel(`channel-msgs-${activeChat.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'mensagens',
+                    filter: `condominio_id=eq.${userProfile.condominio_id}`,
+                },
+                (payload) => {
+                    const row = payload.new
+                    if (row.conversa_id !== activeChat.id) return
+                    const key = activeChat.id
+                    const newMsg = { id: row.id, conteudo: row.conteudo, remetente_id: row.remetente_id, remetente_nome: row.remetente_nome, created_at: row.created_at }
+                    setMensagensByConversa(prev => {
+                        const list = prev[key] || []
+                        if (list.some(m => m.id === row.id)) return prev
+                        return { ...prev, [key]: [...list, newMsg] }
+                    })
+                }
+            )
+            .subscribe()
+        return () => { supabase.removeChannel(ch) }
     }, [activeChat?.id, activeChat?.type, userProfile?.condominio_id])
 
     // Realtime: novas mensagens em DM
@@ -363,33 +393,62 @@ export const Mural = ({ session, userProfile }) => {
 
     const handleSendMensagem = async () => {
         const txt = chatMessage.trim()
-        if (!txt || !activeChat || !userProfile?.condominio_id || !session?.user) return
+        if (!txt || !activeChat) return
+        if ((!userProfile?.condominio_id && userProfile?.tipo !== 'superadmin') || !session?.user) {
+            toast('Vincule seu perfil a um condomínio para enviar mensagens.', 'error')
+            return
+        }
+        const key = getChatKey(activeChat)
+        const tempId = `opt-${Date.now()}`
+        const optimisticMsg = { id: tempId, conteudo: txt, remetente_id: session.user.id, remetente_nome: currentUser, created_at: new Date().toISOString() }
+        setChatMessage('')
+        setMensagensByConversa(prev => ({ ...prev, [key]: [...(prev[key] || []), optimisticMsg] }))
         setSendingMessage(true)
         try {
             if (activeChat.type === 'dm') {
-                const { error } = await supabase.from('mensagens_privadas').insert({
+                const { data, error } = await supabase.from('mensagens_privadas').insert({
                     condominio_id: userProfile.condominio_id,
                     remetente_id: session.user.id,
                     remetente_nome: currentUser,
                     destinatario_id: activeChat.id,
                     conteudo: txt
-                })
+                }).select('id, conteudo, remetente_id, remetente_nome, created_at').single()
                 if (error) throw error
+                setMensagensByConversa(prev => ({
+                    ...prev, [key]: (prev[key] || []).map(m => m.id === tempId ? { ...data } : m)
+                }))
             } else {
-                const { error } = await supabase.from('mensagens').insert({
-                    condominio_id: userProfile.condominio_id,
-                    conversa_id: activeChat.id,
-                    remetente_id: session.user.id,
-                    remetente_nome: currentUser,
-                    conteudo: txt
+                let data
+                const { data: rpcData, error: rpcErr } = await supabase.rpc('send_mensagem', {
+                    p_condominio_id: userProfile.condominio_id,
+                    p_conversa_id: activeChat.id,
+                    p_conteudo: txt,
+                    p_remetente_nome: currentUser
                 })
-                if (error) throw error
+                if (!rpcErr) {
+                    data = rpcData
+                } else {
+                    const { data: insData, error: insErr } = await supabase.from('mensagens').insert({
+                        condominio_id: userProfile.condominio_id,
+                        conversa_id: activeChat.id,
+                        remetente_id: session.user.id,
+                        remetente_nome: currentUser,
+                        conteudo: txt
+                    }).select('id, conteudo, remetente_id, remetente_nome, created_at').single()
+                    if (insErr) throw insErr
+                    data = insData
+                }
+                setMensagensByConversa(prev => ({
+                    ...prev, [key]: (prev[key] || []).map(m => m.id === tempId ? data : m)
+                }))
             }
-            setChatMessage('')
-            await fetchMensagens(activeChat)
             toast('Mensagem enviada.', 'success')
         } catch (err) {
-            toast('Erro ao enviar: ' + (err.message || 'Tente novamente.'), 'error')
+            setMensagensByConversa(prev => ({
+                ...prev, [key]: (prev[key] || []).filter(m => m.id !== tempId)
+            }))
+            setChatMessage(txt)
+            toast('Erro ao enviar: ' + traduzirErro(err.message), 'error')
         } finally {
             setSendingMessage(false)
         }
@@ -408,7 +467,7 @@ export const Mural = ({ session, userProfile }) => {
             }))
             toast('Mensagem excluída.', 'success')
         } catch (err) {
-            toast('Erro ao excluir: ' + (err.message || 'Tente novamente.'), 'error')
+            toast('Erro ao excluir: ' + traduzirErro(err.message), 'error')
         }
     }
 
@@ -521,7 +580,7 @@ export const Mural = ({ session, userProfile }) => {
                         ...newItem,
                         data: new Date().toISOString().split('T')[0],
                         quem_reportou: currentUser,
-                        condominio_id: userProfile?.condominio_id
+                        condominio_id: userProfile?.condominio_id || null
                     }
                 ])
 
@@ -742,7 +801,7 @@ export const Mural = ({ session, userProfile }) => {
             {/* Sidebar Chat Column (Desktop Only) */}
             <div className="hidden lg:flex flex-col w-80 space-y-6 h-[calc(100vh-140px)] sticky top-28">
                 <div className="bg-surface rounded-[32px] border border-card-border overflow-hidden flex flex-col flex-1 shadow-2xl">
-                    <div className="p-6 bg-slate-100 border-b border-card-border">
+                    <div className="chat-header p-6 bg-slate-100 border-b border-card-border">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
                                 <Users className="text-primary" size={20} />
@@ -750,7 +809,7 @@ export const Mural = ({ session, userProfile }) => {
                             </div>
                             <Settings
                                 size={18}
-                                className="text-slate-500 cursor-pointer hover:text-slate-900 transition-colors"
+                                className="chat-header-settings text-slate-600 cursor-pointer hover:text-slate-900 transition-colors"
                                 onClick={() => setShowChatSettings(true)}
                             />
                         </div>
@@ -875,7 +934,7 @@ export const Mural = ({ session, userProfile }) => {
                                     <span className="text-[10px] text-slate-500 italic">{typingChat} está digitando...</span>
                                 </div>
                             )}
-                            <div className="p-4 bg-slate-100 border-t border-card-border flex items-center gap-2 animate-in slide-in-from-bottom duration-300 relative">
+                            <div className="chat-input-bar p-4 bg-slate-100 border-t border-card-border flex items-center gap-2 animate-in slide-in-from-bottom duration-300 relative">
                                 <input
                                     type="text"
                                     value={chatMessage}
@@ -1019,7 +1078,7 @@ export const Mural = ({ session, userProfile }) => {
                                     onClick={() => setFiltroAchados(f)}
                                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${filtroAchados === f
                                         ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                        : 'bg-background text-slate-500 border-card-border hover:border-slate-300'
+                                        : 'bg-background text-slate-300 border-card-border hover:border-slate-400'
                                         }`}
                                 >
                                     {f === 'todos' ? 'Ver Todos' : f === 'Achado' ? 'Achados' : 'Perdidos'}

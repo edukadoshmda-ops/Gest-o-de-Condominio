@@ -72,7 +72,7 @@ export const GestaoUsuarios = ({ session, userProfile }) => {
             toast('Você não pode excluir seu próprio perfil.', 'error')
             return
         }
-        if (u.tipo === 'admin_master' && userProfile?.tipo !== 'admin_master') {
+        if ((u.tipo === 'admin_master' || u.tipo === 'superadmin') && (userProfile?.tipo !== 'admin_master' && userProfile?.tipo !== 'superadmin')) {
             toast('Apenas um administrador pode excluir outro admin.', 'error')
             return
         }
@@ -102,6 +102,7 @@ export const GestaoUsuarios = ({ session, userProfile }) => {
             case 'porteiro':
                 return <span className="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 w-max"><UserCog size={12} /> Porteiro</span>
             case 'admin_master':
+            case 'superadmin':
                 return <span className="bg-purple-500/10 text-purple-500 border border-purple-500/20 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 w-max"><ShieldAlert size={12} /> Admin</span>
             default:
                 return <span className="bg-slate-500/10 text-slate-600 border border-card-border px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 w-max"><UserCircle size={12} /> Morador</span>
@@ -155,7 +156,7 @@ export const GestaoUsuarios = ({ session, userProfile }) => {
                                 <tr><td colSpan="5" className="px-6 py-12 text-center text-slate-500">Nenhum usuário encontrado.</td></tr>
                             ) : filteredUsuarios.map((u) => {
                                 // Evitar que o síndico rebaixe o admin master (caso misturado)
-                                const isAdminMaster = u.tipo === 'admin_master';
+                                const isAdminMaster = u.tipo === 'admin_master' || u.tipo === 'superadmin';
                                 // Evitar que o próprio usuário se bloqueie
                                 const isSelf = u.id === session?.user?.id;
 
@@ -215,7 +216,7 @@ export const GestaoUsuarios = ({ session, userProfile }) => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5 text-center">
-                                            {(u.id !== session?.user?.id) && (u.tipo !== 'admin_master' || userProfile?.tipo === 'admin_master') && (
+                                            {(u.id !== session?.user?.id) && ((u.tipo !== 'admin_master' && u.tipo !== 'superadmin') || userProfile?.tipo === 'admin_master' || userProfile?.tipo === 'superadmin') && (
                                                 <button
                                                     type="button"
                                                     onClick={() => handleExcluirUsuario(u)}

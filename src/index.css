@@ -85,20 +85,91 @@ body {
   color: rgb(203 213 225);
 }
 
+/* Em temas escuros: modais/dropdowns com bg-surface escuro usam texto claro */
+.theme-dark .bg-surface .text-slate-500,
+.theme-dark .bg-surface .text-slate-600,
+.theme-dark .bg-surface .text-slate-700,
+.theme-dark .bg-surface .text-slate-800,
+.theme-dark .bg-surface .text-slate-900 {
+  color: rgb(226 232 240);
+}
+.theme-dark .bg-surface .hover\:text-slate-900:hover {
+  color: rgb(248 250 252) !important;
+}
+
 /* Temas escuros: ícones em caixas claras usam cor primária para contraste */
-.theme-dark .theme-icon-box {
+.theme-dark .theme-icon-box:not(.action-btn-preserve-colors) {
   background: rgb(51 65 85) !important;
   border-color: rgb(71 85 105) !important;
   color: rgb(var(--primary)) !important;
 }
-.theme-dark .theme-icon-box svg,
-.theme-dark .theme-icon-box * {
+.theme-dark .theme-icon-box:not(.action-btn-preserve-colors) svg,
+.theme-dark .theme-icon-box:not(.action-btn-preserve-colors) * {
   color: inherit !important;
+}
+
+/* Action buttons do Dashboard: manter as mesmas cores pastéis em tema escuro */
+.theme-dark .action-btn-preserve-colors {
+  /* fundo e ícone mantêm as classes Tailwind (amber, blue, purple, etc.) */
+}
+.theme-dark .action-btn-preserve-colors + span {
+  color: rgb(203 213 225) !important;
+}
+.theme-dark .action-btn-preserve-colors + span:hover {
+  color: rgb(248 250 252) !important;
+}
+
+/* Temas escuros: fundos claros viram escuros em todo o app */
+.theme-dark .bg-slate-100 {
+  background-color: rgb(51 65 85) !important;
+}
+.theme-dark .bg-slate-100\/50 {
+  background-color: rgb(51 65 85 / 0.7) !important;
+}
+.theme-dark .bg-slate-200 {
+  background-color: rgb(71 85 105) !important;
 }
 
 /* Temas escuros: hover claro (bg-slate-100) vira escuro para texto branco visível */
 .theme-dark .hover\:bg-slate-100:hover {
   background-color: rgb(51 65 85) !important;
+}
+.theme-dark .hover\:bg-slate-200:hover {
+  background-color: rgb(71 85 105) !important;
+}
+
+/* Temas escuros: header do chat (CONVERSAS) - fundo e texto legíveis */
+.theme-dark .chat-header {
+  background-color: rgb(51 65 85) !important;
+}
+.theme-dark .chat-header .text-slate-900 {
+  color: rgb(248 250 252) !important;
+}
+.theme-dark .chat-header-settings {
+  color: rgb(203 213 225) !important;
+}
+.theme-dark .chat-header-settings:hover {
+  color: rgb(248 250 252) !important;
+}
+.theme-dark .chat-header .bg-white\/50 {
+  background-color: rgb(71 85 105) !important;
+}
+.theme-dark .chat-header .text-slate-600:not(.chat-header-settings) {
+  color: rgb(226 232 240) !important;
+}
+
+/* Temas escuros: área de input do chat (barra inferior) - fundo escuro, input legível */
+.theme-dark .chat-input-bar {
+  background-color: rgb(51 65 85) !important;
+  border-color: rgb(71 85 105) !important;
+}
+.theme-dark .chat-input-bar input {
+  background-color: rgb(30 41 59) !important;
+  border-color: rgb(71 85 105) !important;
+  color: rgb(248 250 252) !important;
+}
+.theme-dark .chat-input-bar input::placeholder {
+  color: rgb(148 163 184) !important;
 }
 
 /* Temas escuros: logo - azul fica branco, laranja permanece (clareia o azul) */
